@@ -11,7 +11,7 @@ class StoreSurveyQuestionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,22 @@ class StoreSurveyQuestionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => ['required', 'string' , 'max:255'],
+            'question_type' => ['required', 'string' , 'max:255'],
+            'options' => ['required', 'json'],
         ];
     }
+
+    /*
+     * Message d'erreur personnalisé (optionnel)
+     */
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Veuillez écrire un titre avant de valider la question.',
+            'question_type.required' => 'Le contenu est obligatoire.',
+        ];
+    }
+
 }
