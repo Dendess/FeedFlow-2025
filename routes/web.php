@@ -17,4 +17,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// routes/web.php
+
+Route::get('/add-questions', function () {
+    return view('layouts.addQuestionsSurvey');
+});
+
+
+
 require __DIR__.'/auth.php';
