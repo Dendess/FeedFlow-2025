@@ -20,8 +20,10 @@ final class SurveyQuestionDTO
         return new self(
             survey_id: 1,
             title: $request->title,
-            question_type: $request->question_type,
-            options: $request->options,
+            //question_type: $request->question_type,
+            //options: $request->options,
+            question_type: "Simple",
+            options: ["Option 1", "Option 3"],
         );
     }
 }
