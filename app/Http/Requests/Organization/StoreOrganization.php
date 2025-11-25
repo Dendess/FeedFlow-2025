@@ -22,7 +22,11 @@ class StoreOrganization extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'id' => ['required', 'bigint'],
+            'name' => ['required', 'varchar'],
+            'user_id' => ['required', 'bigint'],
+            'created_at' => ['required', 'timestamp'],
+            'updated_at' => ['required', 'timestamp'],
         ];
     }
 }
