@@ -1,14 +1,21 @@
 <?php
-
 namespace App\Actions\User;
 
-class DeleteUserAction
+use App\DTOs\OrganizationDTO;
+use Illuminate\Support\Facades\DB;
+
+final class DeleteUserAction
 {
+    public function __construct() {}
+
     /**
-     * Create a new class instance.
+     * Delete a user
+     * @param UserDTO $dto
+     * @return array
      */
-    public function __construct()
+    public function handle(UserDTO $dto): array
     {
-        //
+        return DB::transaction(function () use ($dto) {
+        });
     }
 }
