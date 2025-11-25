@@ -14,7 +14,8 @@ class Survey extends Model
     protected $fillable = [
         'id', 'organization_id', 'user_id',
         'title', 'description', 'start_date', 'end_date', 'is_anonymous',
-        'created_at', 'updated_at'
+        'created_at', 'updated_at',
+        'token',
     ];
     protected $casts = [
     ];

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('organization_id');
             $table->unsignedBigInteger('user_id');
             $table->string('title');
+            $table->string('token')->unique();
             $table->text('description');
             $table->dateTime('start_date');
             $table->dateTime('end_date');
