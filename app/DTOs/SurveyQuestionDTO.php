@@ -32,6 +32,14 @@ final class SurveyQuestionDTO
         return array_values($filterdOptions);
     }
 
+    private static function attributeValueToCheckbox ($question_type): string {
+        // condition pour que la checkbox ne fasse pas planter l'ajout
+        if (empty($question_type) || $question_type === null) {
+            $question_type = 'text';
+        }
+        return $question_type;
+    }
+
 
     public static function fromRequest(Request $request): self
     {
@@ -39,10 +47,13 @@ final class SurveyQuestionDTO
         $rawOptions = $request->options;
         $optionsArray = self::convertOptionsToArray($rawOptions); // => tableau final des options
 
+        $rawQuestionType = $request->question_type;
+       $answerQuestionType = self::attributeValueToCheckbox($rawQuestionType);
+
         return new self(
             survey_id: 1,
             title: $request->title,
-            question_type: $request->question_type,
+            question_type: $answerQuestionType,
             options: $optionsArray,
         );
     }
