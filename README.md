@@ -47,3 +47,9 @@ docker exec -it feedflow-app php artisan db:seed
 | Exécuter une commande Artisan | `docker exec -it feedflow-app php artisan `             |
 
 **Important** : Vous pouvez entrer dans le conteneur pour saisir directement vos commandes artisan.
+
+
+
+Adam: Le bon lien pour se connecter aux pages est :http://localhost:8000/survey/{token}
+Si on veux changer le lien en http://127.0.0.1:8000/survey/Zamn, il faut aller dans le .env et remplacer APP_URL par :APP_URL=http://127.0.0.1:8000
+
