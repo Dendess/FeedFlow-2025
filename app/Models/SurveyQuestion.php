@@ -17,5 +17,8 @@ class SurveyQuestion extends Model
         'created_at', 'updated_at'
     ];
     protected $casts = [
+        //encoder automatiquement l’array en JSON pour la base.
+        //décoder automatiquement le JSON en array quand tu récupères le modèle.
+        'options' => 'array',
     ];
 }

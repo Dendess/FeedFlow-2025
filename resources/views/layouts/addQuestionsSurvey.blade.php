@@ -23,13 +23,13 @@
             @csrf
             <h3>Question : </h3>
             <br>
-            <input type="text" id="title" placeholder="Titre">
+            <input type="text" id="title" name="title" placeholder="Titre">
             <br>
             <br>
-            <input type="text" id="options" placeholder="Option de réponse">
+            <input type="text" id="options" name="options" placeholder="Option de réponse">
             <br>
             <br>
-            <input type="checkbox" id="question_type">Plusieurs questions possibles</input>
+            <input type="checkbox" id="question_type" name="question_type">Plusieurs questions possibles</input>
             <br>
             <button type="submit"
                 class="mt-4 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"

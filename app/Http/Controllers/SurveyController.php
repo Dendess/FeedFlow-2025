@@ -12,9 +12,9 @@ class SurveyController extends Controller
 {
     public function store(StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action): JsonResponse
     {
-// 1. Construction du DTO à partir de la requête validée
+        // 1. Construction du DTO à partir de la requête validée
         $dto = SurveyQuestionDTO::fromRequest($request);
-// 2. Exécution de la logique métier via l’Action
+        // 2. Exécution de la logique métier via l’Action
         $article = $action->execute($dto);
 // 3. Réponse HTTP au format JSON
         return response()->json([
