@@ -3,6 +3,7 @@ namespace App\Actions\Survey;
 
 use App\DTOs\SurveyAnswerDTO;
 use App\DTOs\SurveyDTO;
+use App\Events\SurveyAnswerSubmitted;
 use App\Models\SurveyAnswer;
 use Illuminate\Support\Facades\DB;
 
@@ -25,6 +26,7 @@ final class StoreSurveyAnswerAction
             'user_id' => $dto->user_id,
         ]);
 // Ici on pourrait déclencher un Event (ex : ArticlePublished)
+        event(new SurveyAnswerSubmitted($article));
         return $article;
     }
 }

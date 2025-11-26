@@ -24,6 +24,7 @@ class StoreSurveyAnswerRequest extends FormRequest
         return [
             'answers' => ['required', 'array'],
             'answers.*.question_id' => ['required', 'integer'],
+            'answers.*.survey_id' => ['required', 'integer'],
             'answers.*.answer' => ['required', 'string', 'max:255'],
         ];
     }

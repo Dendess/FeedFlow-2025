@@ -15,10 +15,10 @@ use Illuminate\Http\Request;
 
 class SurveyController extends Controller
 {
-    public function index()
+    public function index(int $survey_id)
     {
-        $questions = SurveyQuestion::all();   // FETCH DB
-        return view('layouts.AnswerQuestion', compact('questions'));  // BLADE
+        $questions = SurveyQuestion::where('survey_id', $survey_id)->get();   // FETCH DB
+        return view('layouts.AnswerQuestion', compact('questions','survey_id'));  // BLADE
     }
     public function store(StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action)
     {
@@ -38,6 +38,7 @@ class SurveyController extends Controller
 // 1. Construction du DTO à partir de la requête validée
         //dd($request->all());
         $answers = $request->input('answers');
+        $survey_id = $answers[0]['survey_id'];
         foreach ($request->validated()['answers'] as $answerData) {
             $dto = SurveyAnswerDTO::fromArray($answerData,$request);
 
@@ -45,6 +46,7 @@ class SurveyController extends Controller
             $action->execute($dto);
         }
 // 3. Réponse HTTP au format JSON
-        return redirect()->route('surveys.index');
+        return redirect()->route('surveys.index', ['survey' => $survey_id])
+            ->with('success', 'Merci pour votre réponse!');
     }
 }

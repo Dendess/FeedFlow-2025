@@ -19,7 +19,7 @@ Route::get('/add-questions', function () {
 Route::post('/add-questions', [SurveyController::class, 'store'])->name('question.store');
 
 //Routes réponse aux questions
-Route::get('/answer_question', [SurveyController::class, 'index'])->name('surveys.index');
+Route::get('/{survey}/answer_question', [SurveyController::class, 'index'])->name('surveys.index');
 
 Route::post('/answer_question', [SurveyController::class, 'storeAnswer'])->name('answer.store');
 
