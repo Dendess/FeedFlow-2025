@@ -1,21 +1,24 @@
 <?php
+
 namespace App\Actions\Organization;
 
 use App\DTOs\OrganizationDTO;
-use Illuminate\Support\Facades\DB;
+use App\Models\Organization;
 
 final class UpdateOrganizationAction
 {
-    public function __construct() {}
-
     /**
-     * Update an organization
-     * @param OrganizationDTO $dto
-     * @return array
+     * Met à jour les informations d'une organisation.
+     * * @param Organization $organization L'entité à modifier (reçue du Controller)
+     * @param OrganizationDTO $dto       Les nouvelles données validées
      */
-    public function handle(OrganizationDTO $dto): array
+    public function execute(Organization $organization, OrganizationDTO $dto): Organization
     {
-        return DB::transaction(function () use ($dto) {
-        });
+        // Pas besoin de DB::transaction ici, c'est une opération atomique simple
+        $organization->update([
+            'name' => $dto->name,
+        ]);
+
+        return $organization;
     }
 }

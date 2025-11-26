@@ -4,61 +4,68 @@ namespace App\Policies;
 
 use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class OrganizationPolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * Qui peut voir la liste des organisations ?
+     * Tout utilisateur connecté peut accéder à la page "Mes organisations".
+     * (Le Controller se chargera de filtrer pour n'afficher que les siennes).
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Qui peut voir une organisation spécifique (Dashboard) ?
+     * Règle : Il faut être membre de l'organisation.
      */
     public function view(User $user, Organization $organization): bool
     {
-        return false;
+        // On vérifie si l'utilisateur est présent dans la relation 'users' de l'organisation
+        return $organization->users()->where('user_id', $user->id)->exists();
     }
 
     /**
-     * Determine whether the user can create models.
+     * Qui peut créer une organisation ?
+     * Règle : Tout utilisateur authentifié.
      */
     public function create(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Qui peut modifier (Update) l'organisation ?
+     * Règle : Il faut être membre ET avoir le rôle 'admin'.
      */
     public function update(User $user, Organization $organization): bool
     {
-        return false;
+        // 1. On récupère le membre dans la table pivot
+        // Note : On utilise first() pour récupérer l'objet pivot
+        $member = $organization->users()->where('user_id', $user->id)->first();
+
+        // 2. On vérifie :
+        // - Qu'il est bien membre ($member n'est pas null)
+        // - Que son rôle dans la pivot est 'admin'
+        return $member && $member->pivot->role === 'admin';
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Qui peut supprimer l'organisation ?
+     * Règle : Même règle que pour la modification (admin seulement).
      */
     public function delete(User $user, Organization $organization): bool
     {
-        return false;
+        return $this->update($user, $organization);
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
     public function restore(User $user, Organization $organization): bool
     {
         return false;
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
     public function forceDelete(User $user, Organization $organization): bool
     {
         return false;

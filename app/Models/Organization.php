@@ -14,4 +14,12 @@ class Organization extends Model
     protected $fillable = [ 'id', 'name', 'user_id', 'created_at', 'updated_at' ];
     protected $casts = [
     ];
+
+    public function users()
+    {
+        // Relation many-to-many with pivot 'organization_user'.
+        // Include the 'role' pivot column so policies can check membership role (e.g. 'admin').
+        return $this->belongsToMany(User::class)->withPivot('role')->withTimestamps();
+    }
+
 }
