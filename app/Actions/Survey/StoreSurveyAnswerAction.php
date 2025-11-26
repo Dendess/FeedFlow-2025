@@ -1,7 +1,9 @@
 <?php
 namespace App\Actions\Survey;
 
+use App\DTOs\SurveyAnswerDTO;
 use App\DTOs\SurveyDTO;
+use App\Models\SurveyAnswer;
 use Illuminate\Support\Facades\DB;
 
 final class StoreSurveyAnswerAction
@@ -10,12 +12,19 @@ final class StoreSurveyAnswerAction
 
     /**
      * Store a Survey
-     * @param SurveyDTO $dto
-     * @return array
+     * @param SurveyAnswerDTO $dto
+     * @return SurveyAnswer
      */
-    public function handle(SurveyDTO $dto): array
+    public function execute(SurveyAnswerDTO $dto): SurveyAnswer
     {
-        return DB::transaction(function () use ($dto) {
-        });
+// Création de l’article via Eloquent
+        $article = SurveyAnswer::create([
+            'answer' => $dto->answer,
+            'survey_id' => $dto->survey_id,
+            'survey_question_id' => $dto->survey_question_id,
+            'user_id' => $dto->user_id,
+        ]);
+// Ici on pourrait déclencher un Event (ex : ArticlePublished)
+        return $article;
     }
 }

@@ -11,7 +11,7 @@ class StoreSurveyAnswerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,18 @@ class StoreSurveyAnswerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'answers' => ['required', 'array'],
+            'answers.*.question_id' => ['required', 'integer'],
+            'answers.*.answer' => ['required', 'string', 'max:255'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'answer.*.answer.required' => 'Une réponse obligatoire est manquante.',
+            'answer.*.answer.max' => 'La réponse est trop longue.',
+        ];
+    }
+
 }

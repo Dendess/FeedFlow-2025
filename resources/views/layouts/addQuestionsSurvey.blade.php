@@ -14,6 +14,7 @@
 </head>
 
 <body>
+
 <div class="min-h-screen bg-gray-100 py-12">
     <div class="max-w-4xl mx-auto bg-white shadow rounded-lg p-6">
         <h1 class="text-2xl font-bold mb-4">
@@ -21,21 +22,12 @@
         </h1>
         <form action="{{ route('question.store') }}" method="POST">
             @csrf
-            <h3>Question : </h3>
-            <br>
-            <input type="text" id="title" placeholder="Titre">
-            <br>
-            <br>
-            <input type="text" id="options" placeholder="Option de réponse">
-            <br>
-            <br>
-            <input type="checkbox" id="question_type">Plusieurs questions possibles</input>
-            <br>
-            <button type="submit"
-                class="mt-4 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
-            >
-                Validée
-            </button>
+
+            <input type="text" id="title" name="title" placeholder="Titre">
+            <input type="text" id="options" name="options[]" placeholder="Option de réponse">
+            <input type="checkbox" id="question_type" name="question_type" value="multiple">
+
+            <button type="submit"> Valider </button>
         </form>
     </div>
 </div>
