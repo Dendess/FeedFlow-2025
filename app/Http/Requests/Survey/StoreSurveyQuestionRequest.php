@@ -24,7 +24,7 @@ class StoreSurveyQuestionRequest extends FormRequest
         return [
             'title' => ['required', 'string' , 'max:255'],
             'question_type' => ['nullable', 'string' , 'max:255'],
-            'options' => ['required', 'string' , 'max:255'],
+            'options' => ['required', 'array'],
             //'options' => ['required', function($attribute, $value, $fail) {
                 //if($value ==1) $fail('erreur');
 
