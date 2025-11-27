@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\SurveyAnswer;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -14,12 +15,14 @@ class SurveyAnswerSubmitted
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public SurveyAnswer $answer;
+
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct(SurveyAnswer $answer)
     {
-        //
+        $this->answer = $answer;
     }
 
     /**

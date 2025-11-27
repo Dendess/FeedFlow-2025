@@ -9,7 +9,7 @@ class SurveyQuestion extends Model
 {
     use HasFactory;
 
-    protected $table    = 'surveys_questions';
+    protected $table    = 'survey_questions';
     public $timestamps  = true;
     protected $fillable = [
         'id', 'survey_id',
@@ -17,5 +17,8 @@ class SurveyQuestion extends Model
         'created_at', 'updated_at'
     ];
     protected $casts = [
+        //encoder automatiquement l’array en JSON pour la base.
+        //décoder automatiquement le JSON en array quand tu récupères le modèle.
+        'options' => 'array',
     ];
 }

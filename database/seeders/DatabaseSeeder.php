@@ -2,11 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Organization;
+use App\Models\Survey;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Survey;
-use App\Models\Organization;
+use Illuminate\Support\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,53 +19,27 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
+
         User::create([
             'last_name'     => 'Doe',
             'first_name'    => 'John',
-            'email'         => 'test@feedflow.local',
+            'email'         => 'adam@honvault.com',
             'password'      => bcrypt('password'),
         ]);
-
         Organization::create([
-            'id' => 1,
-            'name' => 'My Organization',
-            'created_at' => now(),
-            'updated_at' => now(),
-            'user_id' => 1
-        ]);
-        Survey::create([
-            'organization_id' => 1,
+            'name' => 'Example Organization',
             'user_id' => 1,
-            'title' => 'Automatic Test Survey',
-            'description' => 'Created automatically by seeder.',
-            'start_date' => now()->subDay(),
-            'end_date' => now()->addDay(),
-            'is_anonymous' => true,
-            'token' => 'Zamn',
         ]);
 
         Survey::create([
-            'organization_id' => 1,
-            'user_id' => 1,
-            'title' => 'Automatic Test Survey 2',
-            'description' => 'Created automatically by seeder. 2',
-            'start_date' => now()->subDay(),
-            'end_date' => now()->subDay(),
-            'is_anonymous' => false,
-            'token' => 'Damn',
+            'organization_id' => 1, // adjust if you have organizations
+            'user_id'         => 1, // must be a valid user ID
+            'title'           => 'Customer Satisfaction Survey',
+            'description'     => 'A short survey to collect customer feedback on our services.',
+            'start_date'      => Carbon::now()->subDays(1),
+            'end_date'        => Carbon::now()->addDays(30),
+            'is_anonymous'    => true,
+            'token'           => 'Damn',
         ]);
-
-        $survey = Survey::create([
-            'organization_id' => 1,
-            'user_id' => 1,
-            'title' => 'Automatic Test Survey',
-            'description' => 'Created automatically by seeder.',
-            'token' => 'Zamn',
-            'start_date' => now()->subDay(),
-            'end_date' => now()->addDay(),
-            'is_anonymous' => true,
-        ]);
-
-
     }
 }

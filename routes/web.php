@@ -12,6 +12,21 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+//Routes ajout de question
+Route::get('/add-questions', function () {
+    return view('layouts.addQuestionsSurvey');
+});
+Route::post('/add-questions', [SurveyController::class, 'store'])->name('question.store');
+
+//Routes réponse aux questions
+Route::get('/{survey}/answer_question', [SurveyController::class, 'index'])->name('surveys.index');
+
+Route::post('/answer_question', [SurveyController::class, 'storeAnswer'])->name('answer.store');
+
+
+Route::post('/add-questions', [SurveyController::class, 'store'])->name('question.store');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
