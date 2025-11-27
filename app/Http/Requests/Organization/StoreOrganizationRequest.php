@@ -4,33 +4,34 @@ namespace App\Http\Requests\Organization;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteOrganization extends FormRequest
+class StoreOrganizationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'id' => ['required', 'bigint'],
+            'name' => ['required', 'string', 'max:255'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'id.required' => "L'identifiant de l'organisation est obligatoire.",
-            'id.bigint' => "L'identifiant de l'organisation doit être un entier valide.",
+            'name.required' => "Le nom de l'organisation est obligatoire.",
+            'name.string' => "Le nom de l'organisation doit être une chaîne de caractères.",
+            'name.max' => "Le nom de l'organisation ne peut pas dépasser 255 caractères.",
         ];
     }
 }
