@@ -5,28 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
-    public function isAdmin(): bool
-    {
-        // adapte selon ton champ DB réel
-        return $this->role === 'admin'
-            || $this->is_admin === 1
-            || $this->email === 'admin@example.com';
-    }
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'last_name',
-        'first_name',
-        'email',
-        'password',
+        'last_name', 'first_name', 'email', 'password',
     ];
 
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'remember_token',
     ];
 
     protected function casts(): array
@@ -37,15 +27,15 @@ class User extends Authenticatable
         ];
     }
 
-    // AJOUTE CETTE RELATION
-    public function organizations()
+    // Relation ManyToMany avec Organization (avec pivot role)
+    public function organizations(): BelongsToMany
     {
         return $this->belongsToMany(Organization::class, 'organization_user')
             ->withPivot('role')
             ->withTimestamps();
     }
 
-    // AJOUTE CETTE MÉTHODE HELPER
+    // Helper pour récupérer l'organisation courante (Session ou fallback sur la première)
     public function currentOrganizationId()
     {
         return session('current_organization_id') ?? $this->organizations()->first()?->id;
