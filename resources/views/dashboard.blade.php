@@ -14,27 +14,31 @@
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="org-grid">
                 <!-- Carte : Gérer mes organisations -->
-                <a href="{{ route('organizations.index') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition duration-150 ease-in-out">
-                    <div class="flex items-center mb-4">
-                        <div class="p-3 rounded-full bg-indigo-100 text-indigo-600 mr-4">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                <a href="{{ route('organizations.index') }}" class="org-card" title="Gérer mes organisations">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:0.75rem;">
+                        <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:9999px; background:#eef2ff; color:#4f46e5;">
+                            <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                         </div>
-                        <h5 class="text-2xl font-bold tracking-tight text-gray-900">Gérer mes organisations</h5>
+                        <div>
+                            <h3 class="org-card-title">Gérer mes organisations</h3>
+                            <p class="org-card-desc">Accédez à la liste de vos organisations pour les modifier, les supprimer ou changer l'organisation active.</p>
+                        </div>
                     </div>
-                    <p class="font-normal text-gray-700">Accédez à la liste de vos organisations pour les modifier, les supprimer ou changer l'organisation active.</p>
                 </a>
 
                 <!-- Carte : Nouvelle Organisation -->
-                <a href="{{ route('organizations.create') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition duration-150 ease-in-out">
-                    <div class="flex items-center mb-4">
-                        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                <a href="{{ route('organizations.create') }}" class="org-card" title="Créer une organisation">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:0.75rem;">
+                        <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:9999px; background:#ecfccb; color:#38761d;">
+                            <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         </div>
-                        <h5 class="text-2xl font-bold tracking-tight text-gray-900">Nouvelle Organisation</h5>
+                        <div>
+                            <h3 class="org-card-title">Nouvelle Organisation</h3>
+                            <p class="org-card-desc">Créez une nouvelle structure pour commencer à publier vos sondages et collecter des avis.</p>
+                        </div>
                     </div>
-                    <p class="font-normal text-gray-700">Créez une nouvelle structure pour commencer à publier vos sondages et collecter des avis.</p>
                 </a>
             </div>
 
