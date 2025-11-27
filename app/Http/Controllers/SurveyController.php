@@ -38,6 +38,9 @@ class SurveyController extends Controller
         $survey_id = $answers[0]['survey_id'];
         $article = null;
         foreach ($request->validated()['answers'] as $answerData) {
+            if (is_array($answerData['answer'])){
+                $answerData['answer'] = json_encode($answerData['answer']);
+            }
             $dto = SurveyAnswerDTO::fromArray($answerData,$request);
 
             // 2. Exécution de la logique métier via l’Action
