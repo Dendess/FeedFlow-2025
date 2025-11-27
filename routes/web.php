@@ -28,7 +28,7 @@ Route::get('/{survey}/answer_question', [SurveyController::class, 'index'])->nam
 Route::post('/answer_question', [SurveyController::class, 'storeAnswer'])->name('answer.store');
 
 
-Route::post('/add-questions', [SurveyController::class, 'store'])->name('question.store');
+Route::post('/add-questions', [SurveyController::class, 'storeSurveyQuestion'])->name('question.store');
 
 
 Route::middleware('auth')->group(function () {

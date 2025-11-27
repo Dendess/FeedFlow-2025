@@ -150,7 +150,7 @@ class SurveyController extends Controller
         $questions = SurveyQuestion::where('survey_id', $survey_id)->get();   // FETCH DB
         return view('layouts.AnswerQuestion', compact('questions','survey_id'));  // BLADE
     }
-    public function store(StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action)
+    public function storeSurveyQuestion(StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action)
     {
         // 1. Construction du DTO à partir de la requête validée
         $dto = SurveyQuestionDTO::fromRequest($request);
