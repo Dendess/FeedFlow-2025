@@ -44,4 +44,5 @@ class Survey extends Model
     {
         return $this->hasMany(\App\Models\SurveyAnswer::class, 'survey_id');
     }
+
 }
