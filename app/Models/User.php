@@ -8,6 +8,13 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    public function isAdmin(): bool
+    {
+        // adapte selon ton champ DB réel
+        return $this->role === 'admin'
+            || $this->is_admin === 1
+            || $this->email === 'admin@example.com';
+    }
     use HasFactory, Notifiable;
 
     protected $fillable = [

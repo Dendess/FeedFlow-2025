@@ -9,11 +9,9 @@ class SurveyPolicy
 {
     /**
      * Détermine si l'utilisateur peut modifier ou supprimer le sondage.
-     * (Nous supposons qu'une méthode isAdmin() existe sur le modèle User).
      */
-    protected function isOwnerOrAdmin(User $user, Survey $survey): bool
+    public function isOwnerOrAdmin(User $user, Survey $survey): bool
     {
-        // Critère : Seuls les admins ou le propriétaire du sondage
         return $user->isAdmin() || $user->id === $survey->user_id;
     }
 
@@ -26,4 +24,5 @@ class SurveyPolicy
     {
         return $this->isOwnerOrAdmin($user, $survey);
     }
+
 }

@@ -9,10 +9,11 @@ use App\Http\Requests\Survey\StoreSurveyRequest;
 use App\Http\Requests\Survey\UpdateSurveyRequest;
 use App\Models\Survey;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 
 class SurveyController extends Controller
 {
+
 
     public function index()
     {
