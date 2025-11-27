@@ -16,8 +16,9 @@ class SurveyController extends Controller
 
     public function index()
     {
-        // Récupère tous les surveys de l'organisation courante
-        $surveys = Survey::where('organization_id', session('organization_id'))
+        $organizationId = auth()->user()->currentOrganizationId();
+
+        $surveys = Survey::where('organization_id', $organizationId)
             ->orderBy('created_at', 'desc')
             ->get();
 
