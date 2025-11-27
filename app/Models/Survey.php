@@ -4,19 +4,35 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Survey extends Model
 {
     use HasFactory;
 
-    protected $table    = 'surveys';
-    public $timestamps  = true;
+    protected $table = 'surveys';
+    
     protected $fillable = [
-        'id', 'organization_id', 'user_id',
-        'title', 'description', 'start_date', 'end_date', 'is_anonymous',
-        'created_at', 'updated_at',
+        'organization_id', 
+        'user_id',
+        'title', 
+        'description', 
+        'start_date', 
+        'end_date', 
+        'is_anonymous',
         'token',
     ];
-    protected $casts = [
-    ];
+
+    // Relation : Un sondage appartient à une organisation.
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    
+    // Relation : Un sondage appartient à un utilisateur (le créateur).
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

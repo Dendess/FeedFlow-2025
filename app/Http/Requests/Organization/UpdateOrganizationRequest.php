@@ -26,4 +26,13 @@ class UpdateOrganizationRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => "Le nom de l'organisation est obligatoire.",
+            'name.string' => "Le nom de l'organisation doit être une chaîne de caractères.",
+            'name.max' => "Le nom de l'organisation ne peut pas dépasser 255 caractères.",
+        ];
+    }
 }
