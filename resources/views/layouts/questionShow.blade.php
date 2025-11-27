@@ -19,7 +19,7 @@
                     Question
                 </h1>
             </div>
-            <div>
+            <div class="check-or-rad">
                 @if($questions->title)
                     <p>{{$questions->title}}</p>
                 @endif
