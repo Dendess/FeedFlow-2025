@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 final class SurveyQuestionDTO
 {
+
     private function __construct(
         public readonly int  $survey_id,
         public readonly string $title,
@@ -17,7 +18,9 @@ final class SurveyQuestionDTO
     private static function attributeValueToCheckbox ($question_type): string {
         // condition pour que la checkbox ne fasse pas planter l'ajout
         if (empty($question_type) || $question_type === null) {
-            $question_type = 'text';
+            $question_type = 'single';
+        }else{
+            $question_type = 'multiple';
         }
         return $question_type;
     }

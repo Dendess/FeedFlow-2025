@@ -48,13 +48,11 @@
                     <br>
                     <input type="checkbox" id="question_type" name="question_type">Plusieurs réponses possibles</input>
                     <br>
+                    <input type="checkbox" id="question_type_scale" name="question_type_scale">Afficher une échelle</input>
                     <br>
-                    <input type="range" id="difficulty" name="difficulty" min="1" max="10" value="5" oninput="difficultyValue.value = difficulty.value">
-                    <output id="difficultyValue">5</output>
                     <br>
                     <button type="submit"
-                        class="mt-4 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
-                    >
+                        class="mt-4 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
                         Validée
                     </button>
                 </form>

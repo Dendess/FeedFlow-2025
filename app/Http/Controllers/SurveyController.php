@@ -16,7 +16,7 @@ class SurveyController extends Controller
         $dto = SurveyQuestionDTO::fromRequest($request);
         // 2. Exécution de la logique métier via l’Action
         $article = $action->execute($dto);
-        return view('layouts.questionShow' , ['data' => $article]);
+        return view('layouts.questionShow' , ['questions' => $article]);
 // 3. Réponse HTTP au format JSON
         /*return response()->json([
             'message' => 'Article créé avec succès.',
