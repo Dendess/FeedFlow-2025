@@ -42,13 +42,7 @@ class OrganizationPolicy
      */
     public function update(User $user, Organization $organization): bool
     {
-        // 1. On récupère le membre dans la table pivot
-        // Note : On utilise first() pour récupérer l'objet pivot
         $member = $organization->users()->where('user_id', $user->id)->first();
-
-        // 2. On vérifie :
-        // - Qu'il est bien membre ($member n'est pas null)
-        // - Que son rôle dans la pivot est 'admin'
         return $member && $member->pivot->role === 'admin';
     }
 

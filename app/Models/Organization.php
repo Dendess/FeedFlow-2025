@@ -4,22 +4,32 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;      // <--- IMPORT INDISPENSABLE
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;  // <--- Recommandé pour le typage
 
 class Organization extends Model
 {
     use HasFactory;
 
-    protected $table    = 'organizations';
-    public $timestamps  = true;
-    protected $fillable = [ 'id', 'name', 'user_id', 'created_at', 'updated_at' ];
-    protected $casts = [
+    // Pas besoin de définir $table ou $timestamps, Laravel le fait par défaut.
+
+    // On ne met que les champs modifiables par l'utilisateur.
+    // 'id', 'created_at', 'updated_at' sont gérés automatiquement.
+    protected $fillable = [
+        'name',
+        'user_id',
+        'description' // <--- Ajouté pour pouvoir sauvegarder la description
     ];
 
-    public function users()
+    public function users(): BelongsToMany
     {
-        // Relation many-to-many with pivot 'organization_user'.
-        // Include the 'role' pivot column so policies can check membership role (e.g. 'admin').
-        return $this->belongsToMany(User::class)->withPivot('role')->withTimestamps();
+        return $this->belongsToMany(User::class)
+                    ->withPivot('role')
+                    ->withTimestamps();
     }
 
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

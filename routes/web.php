@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\OrganizationController; // <--- Import indispensable
+use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\OrganizationUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,6 +20,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Routes imbriquées : organizations/{id}/users
+    Route::post('/organizations/{organization}/users', [OrganizationUserController::class, 'store'])
+        ->name('organizations.users.store');
+
+    Route::delete('/organizations/{organization}/users/{user}', [OrganizationUserController::class, 'destroy'])
+        ->name('organizations.users.destroy');
 
     // --- Routes de l'Organisation ---
     
