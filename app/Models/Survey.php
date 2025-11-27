@@ -10,7 +10,7 @@ class Survey extends Model
 {
     use HasFactory;
 
-    // Champs autorisés à être remplis (token est inclus car l'Action le remplit)
+    // Champs autorisés à être remplis (tgit oken est inclus car l'Action le remplit)
     protected $fillable = [
         'organization_id', 'user_id', 'title', 'token', 'description',
         'start_date', 'end_date', 'is_anonymous',
