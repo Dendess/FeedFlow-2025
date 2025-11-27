@@ -13,7 +13,7 @@ final class StoreSurveyQuestionAction
     /**
      * Store a Survey
      * @param SurveyQuestionDTO $dto
-     * @return array
+     * @return SurveyQuestion
      */
     public function execute(SurveyQuestionDTO $dto): SurveyQuestion
     {
