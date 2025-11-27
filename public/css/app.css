@@ -1668,6 +1668,7 @@ video {
   }
 }
 
+
 /* BEGIN - Organizations custom styles (appended) */
 /* Contents sourced from resources/css/organizations.css */
 :root{
@@ -1679,6 +1680,13 @@ video {
   --radius: 0.5rem;
   --shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.06);
 }
+
+.org-card-row{display:flex;gap:1rem;flex-wrap:wrap;margin:0 -0.5rem;}
+.org-card{display:block;flex:1 1 320px;min-width:260px;background:var(--card-bg);overflow:hidden;box-shadow:var(--shadow);border-radius:var(--radius);padding:1.5rem;border:1px solid var(--card-border);} 
+.org-card-meta{display:flex;align-items:center;gap:1rem;}
+.org-card-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:#f3f4f6;color:var(--primary);}
+.org-card-icon--primary{background:#eff6ff;color:var(--primary);} 
+.org-card-icon--success{background:#ecfdf5;color:#059669;}
 
 .org-card{background:var(--card-bg);overflow:hidden;box-shadow:var(--shadow);border-radius:var(--radius);padding:1.5rem;border:1px solid var(--card-border);} 
 .org-card-title{font-weight:700;font-size:1.125rem;margin-bottom:0.5rem;} 
