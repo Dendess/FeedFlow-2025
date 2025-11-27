@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\DailyAnswersThresholdReached;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schedule;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -17,8 +22,16 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
+
+
     public function boot(): void
     {
-        //
+        $this->app->booted(function () {
+            // Only run if the table exists
+            if (Schema::hasTable('surveys')) {
+                Artisan::call('surveys:send-daily-reports');
+            }
+        });
+        Log::info('log log log.');
     }
 }

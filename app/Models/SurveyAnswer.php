@@ -9,7 +9,7 @@ class SurveyAnswer extends Model
 {
     use HasFactory;
 
-    protected $table    = 'surveys_answers';
+    protected $table    = 'survey_answers';
     public $timestamps  = true;
     protected $fillable = [
         'id', 'survey_id', 'survey_question_id', 'user_id',
