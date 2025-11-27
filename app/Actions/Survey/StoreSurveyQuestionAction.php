@@ -17,13 +17,8 @@ final class StoreSurveyQuestionAction
      */
     public function execute(SurveyQuestionDTO $dto): SurveyQuestion
     {
-        // 1. Créer la question
-        // 2. Éventuellement gérer data (options, etc.)
-
-
-        // 3. Retourner quelque chose
         return SurveyQuestion::create([
-            'survey_id' => 1,
+            'survey_id' => $dto->survey_id,
             'title' => $dto->title,
             'question_type' => $dto->question_type,
             'options' => $dto->options,

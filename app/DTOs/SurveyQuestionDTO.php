@@ -26,13 +26,13 @@ final class SurveyQuestionDTO
     }
 
 
-    public static function fromRequest(Request $request): self
+    public static function fromRequest(Request $request , int $surveilId): self
     {
        $rawQuestionType = $request->question_type;
        $answerQuestionType = self::attributeValueToCheckbox($rawQuestionType);
 
         return new self(
-            survey_id: 1,
+            survey_id: $surveilId, // utilsation de l'id du questionnaire
             title: $request->title,
             question_type: $answerQuestionType,
             options: $request->options,

@@ -16,10 +16,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 //Routes ajout de question
-Route::get('/add-questions', function () {
+Route::get('/surveys/{survey}/add-questions', function () {
     return view('layouts.addQuestionsSurvey');
 });
-Route::post('/add-questions', [SurveyController::class, 'store'])->name('question.store');
+Route::post('/surveys/{survey}/add-questions', [SurveyController::class, 'storeSurveyQuestion'])->name('question.store');
 
 //Routes réponse aux questions
 Route::get('/{survey}/answer_question', [SurveyController::class, 'indexAnswer'])->name('surveys.index');
@@ -27,7 +27,6 @@ Route::get('/{survey}/answer_question', [SurveyController::class, 'indexAnswer']
 Route::post('/answer_question', [SurveyController::class, 'storeAnswer'])->name('answer.store');
 
 
-Route::post('/add-questions', [SurveyController::class, 'storeSurveyQuestion'])->name('question.store');
 
 
 Route::middleware('auth')->group(function () {

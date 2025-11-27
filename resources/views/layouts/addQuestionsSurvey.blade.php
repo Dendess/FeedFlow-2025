@@ -18,7 +18,7 @@
                 <h1 class="text-2xl font-bold mb-4">
                     Création question du sondage
                 </h1>
-                <form action="{{ route('question.store') }}" method="POST">
+                <form action="{{ route('question.store', $survey) }}" method="POST">
                     @csrf
                     <h3>Question : </h3>
                     <br>

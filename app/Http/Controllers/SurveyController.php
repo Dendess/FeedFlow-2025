@@ -168,13 +168,13 @@ class SurveyController extends Controller
         $questions = SurveyQuestion::where('survey_id', $survey_id)->get();   // FETCH DB
         return view('layouts.AnswerQuestion', compact('questions','survey_id'));  // BLADE
     }
-    public function storeSurveyQuestion(StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action)
+    public function storeSurveyQuestion(Survey $survey,StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action)
     {
         // 1. Construction du DTO à partir de la requête validée
-        $dto = SurveyQuestionDTO::fromRequest($request);
+        $dto = SurveyQuestionDTO::fromRequest($request, $survey->id);
         // 2. Exécution de la logique métier via l’Action
         $article = $action->execute($dto);
-        return view('layouts.questionShow' , ['questions' => $article]);
+        return view('layouts.addQuestionsSurvey' , ['questions' => $article]);
 // 3. Réponse HTTP au format JSON
     }
     // Supprime un sondage
