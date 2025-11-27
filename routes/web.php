@@ -1,65 +1,77 @@
 <?php
 
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\OrganizationUserController; // N'oublie pas cet import !
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Routes Publiques
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    // Astuce : On passe les organisations à la vue dashboard pour le menu
-    // (ou on utilise un ViewComposer plus tard)
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Répondre à un sondage public (via token)
+Route::get('/s/{token}', [SurveyController::class, 'publicShow'])
+    ->name('public.survey.show');
 
-//Routes ajout de question
-Route::get('/add-questions', function () {
-    return view('layouts.addQuestionsSurvey');
-});
-Route::post('/add-questions', [SurveyController::class, 'store'])->name('question.store');
-
-//Routes réponse aux questions
-Route::get('/{survey}/answer_question', [SurveyController::class, 'index'])->name('surveys.index');
-
-Route::post('/answer_question', [SurveyController::class, 'storeAnswer'])->name('answer.store');
+// Enregistrer la réponse (Action publique) - À décommenter si tu as le Controller dédié
+// Route::post('/s/{token}', [SurveyAnswerController::class, 'store'])->name('public.survey.store');
 
 
-Route::post('/add-questions', [SurveyController::class, 'storeSurveyQuestion'])->name('question.store');
+/*
+|--------------------------------------------------------------------------
+| Routes Authentifiées (Dashboard & Gestion)
+|--------------------------------------------------------------------------
+*/
 
+Route::middleware(['auth', 'verified'])->group(function () {
 
-Route::middleware('auth')->group(function () {
-    // Routes du profil utilisateur
+    // --- Dashboard ---
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    // --- Profil ---
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // 2. Routes Sondages (Survey)
-    // On utilise '/surveys' (pluriel) par convention REST, et on pointe vers le contrôleur
+    // --- Sondages (Survey) ---
+    // On définit manuellement pour être sûr de l'ordre et des noms
+    
+    // 1. Liste et Création
     Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+    Route::get('/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
     Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
-    Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
-    Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
 
-    // Routes imbriquées : organizations/{id}/users
+    // 2. Actions spécifiques sur un sondage
+    Route::get('/surveys/{survey}', [SurveyController::class, 'show'])->name('surveys.show');
+    Route::get('/surveys/{survey}/edit', [SurveyController::class, 'edit'])->name('surveys.edit');
+    Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update'); // ou PATCH
+    Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+    
+    // 3. Résultats (Story 9)
+    Route::get('/surveys/{survey}/results', [SurveyController::class, 'results'])->name('surveys.results');
+
+    // --- Organisations ---
+    Route::resource('organizations', OrganizationController::class);
+    
+    Route::post('/organizations/{organization}/switch', [OrganizationController::class, 'switch'])
+        ->name('organizations.switch');
+
+    // --- Utilisateurs de l'Organisation ---
     Route::post('/organizations/{organization}/users', [OrganizationUserController::class, 'store'])
         ->name('organizations.users.store');
 
     Route::delete('/organizations/{organization}/users/{user}', [OrganizationUserController::class, 'destroy'])
         ->name('organizations.users.destroy');
-
-    // --- Routes de l'Organisation ---
-
-    // 1. Route Resource : Crée automatiquement index, create, store, show, edit, update, destroy
-    Route::resource('organizations', OrganizationController::class);
-
-    // 2. Route personnalisée pour le Switch
-    Route::post('/organizations/{organization}/switch', [OrganizationController::class, 'switch'])
-        ->name('organizations.switch');
 });
 
-Route::get('/survey/{token}', [SurveyController::class, 'publicShow'])
-    ->name('public.survey.show');
+
 require __DIR__.'/auth.php';
