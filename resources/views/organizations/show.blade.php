@@ -51,12 +51,6 @@
                             <dt>Créée le</dt>
                             <dd>{{ $organization->created_at->format('d/m/Y') }}</dd>
                         </div>
-                        @if($organization->description)
-                            <div class="org-detail-row org-detail-row--full">
-                                <dt>Description</dt>
-                                <dd>{{ $organization->description }}</dd>
-                            </div>
-                        @endif
                     </dl>
                 </section>
 

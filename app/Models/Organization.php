@@ -18,7 +18,6 @@ class Organization extends Model
     protected $fillable = [
         'name',
         'user_id',
-        'description' // <--- Ajouté pour pouvoir sauvegarder la description
     ];
 
     public function users(): BelongsToMany

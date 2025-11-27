@@ -10,8 +10,7 @@ class UpdateOrganizationAction
     public function handle(Organization $organization, OrganizationDTO $dto): Organization
     {
         $organization->update([
-            'name'        => $dto->name,
-            'description' => $dto->description,
+            'name' => $dto->name,
         ]);
 
         return $organization;

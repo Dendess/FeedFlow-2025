@@ -16,9 +16,8 @@ class StoreOrganizationAction
         return DB::transaction(function () use ($dto) {
             // 1. Création de l'organisation
             $organization = Organization::create([
-                'name'        => $dto->name,
-                'description' => $dto->description,
-                'user_id'     => $dto->user_id, // IMPORTANT : On sauvegarde le propriétaire
+                'name'    => $dto->name,
+                'user_id' => $dto->user_id, // IMPORTANT : On sauvegarde le propriétaire
             ]);
 
             // 2. On ajoute aussi le créateur dans la liste des membres avec le rôle 'admin'

@@ -8,8 +8,7 @@ readonly class OrganizationDTO
 {
     public function __construct(
         public string $name,
-        public ?string $description, // Ajouté
-        public int $user_id,         // Ajouté (CRITIQUE pour la sécurité)
+        public int $user_id, // On garde uniquement le propriétaire
     ) {}
 
     public static function fromRequest(Request $request): self
@@ -19,7 +18,6 @@ readonly class OrganizationDTO
 
         return new self(
             name: $data['name'] ?? '',
-            description: $data['description'] ?? null,
             user_id: $request->user()->id // <--- C'est ici que la magie opère !
         );
     }
