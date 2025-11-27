@@ -20,7 +20,9 @@
                 </h1>
             </div>
             <div>
-                <p>$questions->question</p>
+                @if($questions->title)
+                    <p>{{$questions->title}}</p>
+                @endif
                 @if ($questions->question_type === 'single')
                     @foreach ($questions->options as $option)
                         <label class="block">
@@ -37,11 +39,6 @@
                             {{ $option }}
                         </label>
                     @endforeach
-                @endif
-
-                @if ($questions->question_type_scale === 'on')
-                        <input type="range" id="scale" name="scale" min="1" max="10" value="5" oninput="scaleValue.value = scale.value">
-                        <output id="scaleValue">5</output>
                 @endif
             </div>
         </div>

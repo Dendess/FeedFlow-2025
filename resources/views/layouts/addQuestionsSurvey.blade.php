@@ -25,30 +25,16 @@
                     <input type="text" id="title" name="title" placeholder="Titre">
                     <br>
                     <br>
-                    <div class="answers-options" id="options-container">
+                    <div class="answers-options" id="options-container" hidden>
                         <input type="text" id="options" name="options[]" placeholder="Option de réponse">
                     </div>
                     <br>
                     <br>
-                    <button
-                        class="mt-4 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
-                        id ="add-option-button"
-                        type="button">
-                        +
-                    </button>
-
-                    <button
-                        class="mt-4 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
-                        id="delete-option-button"
-                        type="button"
-                        >
-                        -
-                    </button>
+                    <input type="range" id="scale" name="scale" min="1" max="10" value="5" oninput="scaleValue.value = scale.value">
+                    <output id="scaleValue">5</output>
                     <br>
                     <br>
                     <input type="checkbox" id="question_type" name="question_type">Plusieurs réponses possibles</input>
-                    <br>
-                    <input type="checkbox" id="question_type_scale" name="question_type_scale">Afficher une échelle</input>
                     <br>
                     <br>
                     <button type="submit"
@@ -60,36 +46,33 @@
         </div>
 
         <script>
-            // ajouter une option de réponse
+            const slider = document.getElementById('scale');
+            const scaleValue = document.getElementById('scaleValue');
+            const container = document.getElementById('options-container');
 
-            function addInput () {
-                const inputOptions = document.getElementById("add-option-button");
-                const container = document.getElementById("options-container");
-                inputOptions.addEventListener('click' , function () {
+            function generateOptions() {
+                const n = parseInt(slider.value);
+
+                container.innerHTML = '';
+
+                for (let i = 0; i < n; i++) {
                     const newInput = document.createElement('input');
                     newInput.type = 'text';
                     newInput.name = 'options[]';
                     newInput.placeholder = 'Option de réponse';
-                    container.appendChild(newInput)
-                })
+                    newInput.value = i + 1; // affiche par défaut une valeur entre 1 et 10 dans les inputs
+                    newInput.readOnly = true; // pour que l'utilisateur ne change pas les nombres
+                    newInput.classList.add('mb-2');
+                    container.appendChild(newInput);
+                }
             }
 
-            // supprimer une option de réponse
+            generateOptions();
 
-            function deleteInput () {
-                const inputOptions = document.getElementById("delete-option-button");
-                const container = document.getElementById("options-container");
-                //const inputDelete = document.getElementById("options")
-                inputOptions.addEventListener('click' , function () {
-                    const lastChild = container.lastElementChild;
-                    lastChild.remove();
-                })
-            }
-
-            // appel des fonctions
-
-            addInput();
-            deleteInput ()
+            slider.addEventListener('input', () => {
+                scaleValue.value = slider.value;
+                generateOptions();
+            });
         </script>
     </body>
 </html>
