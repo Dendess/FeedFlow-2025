@@ -33,7 +33,7 @@ class SurveyController extends Controller
 
     public function storeAnswer(StoreSurveyAnswerRequest $request, StoreSurveyAnswerAction $action)
     {
-// 1. Construction du DTO à partir de la requête validée
+        // 1. Construction du DTO à partir de la requête validée
         $answers = $request->input('answers');
         $survey_id = $answers[0]['survey_id'];
         $article = null;
@@ -48,7 +48,8 @@ class SurveyController extends Controller
         }
 
         SurveyAnswerSubmitted::dispatch($article);
-// 3. Réponse HTTP au format JSON
+
+        // 3. Réponse HTTP au format JSON
         return redirect()->route('surveys.index', ['survey' => $survey_id])
             ->with('success', 'Merci pour votre réponse!');
     }
