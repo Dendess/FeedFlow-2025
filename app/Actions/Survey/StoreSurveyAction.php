@@ -1,35 +1,36 @@
 <?php
+
 namespace App\Actions\Survey;
 
 use App\DTOs\SurveyDTO;
 use App\Models\Survey;
+use Illuminate\Support\Str; // Nécessaire pour générer le token
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
-final class StoreSurveyAction
+class StoreSurveyAction
 {
     public function __construct() {}
 
     /**
+     * Crée un nouveau sondage, génère le token et l'assigne à l'organisation/utilisateur.
+     */
+    /**
      * Store a Survey
      * @param SurveyDTO $dto
-     * @return Survey
+     * @return array
      */
     public function handle(SurveyDTO $dto): Survey
     {
-        return DB::transaction(function () use ($dto) {
-            return Survey::create([
-                'organization_id' => $dto->organization_id ?? null,
-                'user_id' => $dto->user_id ?? null,
-                'title' => $dto->title ?? null,
-                'description' => $dto->description ?? null,
-                'start_date' => $dto->start_date ?? null,
-                'end_date' => $dto->end_date ?? null,
-                'is_anonymous' => $dto->is_anonymous ?? false,
-                'token' => Str::random(32),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        });
+        return Survey::create([
+            'title'           => $dto->title,
+            'description'     => $dto->description,
+            'start_date'      => $dto->start_date,
+            'end_date'        => $dto->end_date,
+            'is_anonymous'    => $dto->is_anonymous,
+            'organization_id' => $dto->organization_id,
+            'user_id'         => $dto->user_id,
+
+            // Ligne clé : Génération du token unique (Critère de votre BDD)
+            'token'           => Str::random(32),
+        ]);
     }
 }

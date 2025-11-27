@@ -7,6 +7,10 @@ use App\Models\User;
 
 class SurveyPolicy
 {
+    /**
+     * Détermine si l'utilisateur peut modifier ou supprimer le sondage.
+     */
+    public function isOwnerOrAdmin(User $user, Survey $survey): bool
     // Vérifie si l'utilisateur est membre (Lecteur ou Admin).
     protected function isMemberOfOrganization(User $user, Survey $survey): bool
     {
@@ -28,6 +32,7 @@ class SurveyPolicy
     // Autorisé pour tout le monde (le filtrage des données se fait dans le Controller).
     public function viewAny(User $user): bool
     {
+        return $user->isAdmin() || $user->id === $survey->user_id;
         return true;
     }
 
@@ -50,6 +55,7 @@ class SurveyPolicy
     // Autorisé UNIQUEMENT pour les ADMINS.
     public function update(User $user, Survey $survey): bool
     {
+        return $this->isOwnerOrAdmin($user, $survey);
         return $this->isAdminOfOrganization($user, $survey);
     }
 
@@ -57,6 +63,7 @@ class SurveyPolicy
     // Autorisé UNIQUEMENT pour les ADMINS.
     public function delete(User $user, Survey $survey): bool
     {
+        return $this->isOwnerOrAdmin($user, $survey);
         return $this->isAdminOfOrganization($user, $survey);
     }
 
