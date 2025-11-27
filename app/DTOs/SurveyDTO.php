@@ -18,12 +18,10 @@ class SurveyDTO
 
     public static function fromRequest(Request $request): self
     {
-        // Récupération de l'ID de l'organisation depuis la session
-        $organizationId = session('organization_id');
+        $organizationId = auth()->user()->currentOrganizationId();
 
         if (!$organizationId) {
-            // Vous devez avoir un mécanisme pour garantir que l'organization_id est en session
-            throw new \RuntimeException('L\'ID de l\'organisation courante est manquant en session.');
+            throw new \RuntimeException('Vous devez être assigné à une organisation.');
         }
 
         return new self(
@@ -32,9 +30,8 @@ class SurveyDTO
             start_date: $request->validated('start_date'),
             end_date: $request->validated('end_date'),
             is_anonymous: $request->boolean('is_anonymous'),
-
             organization_id: $organizationId,
-            user_id: auth()->id() // ID de l'utilisateur authentifié
+            user_id: auth()->id()
         );
     }
 }

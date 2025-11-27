@@ -13,6 +13,16 @@ use Illuminate\Routing\Controller;
 
 class SurveyController extends Controller
 {
+
+    public function index()
+    {
+        // Récupère tous les surveys de l'organisation courante
+        $surveys = Survey::where('organization_id', session('organization_id'))
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('surveys', compact('surveys'));
+    }
     public function __construct()
     {
         // Assure que seul un utilisateur authentifié peut accéder aux méthodes
