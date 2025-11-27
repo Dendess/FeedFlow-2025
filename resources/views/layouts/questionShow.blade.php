@@ -19,6 +19,11 @@
                     Question
                 </h1>
             </div>
+            <div>
+                @foreach($data -> options as $option)
+                    <li>{{$option}}</li>
+                @endforeach
+            </div>
         </div>
     </body>
 </html>
