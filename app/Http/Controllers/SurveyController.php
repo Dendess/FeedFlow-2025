@@ -48,7 +48,7 @@ class SurveyController extends Controller
             'survey' => $survey,
         ]);
     }
-    public function indexFromG()
+    public function index()
     {
         $organizationId = auth()->user()->currentOrganizationId();
 
@@ -163,7 +163,7 @@ class SurveyController extends Controller
             ->with('success', 'Merci pour votre réponse!');
     }
 
-    public function index2(int $survey_id)
+    public function indexAnswer(int $survey_id)
     {
         $questions = SurveyQuestion::where('survey_id', $survey_id)->get();   // FETCH DB
         return view('layouts.AnswerQuestion', compact('questions','survey_id'));  // BLADE
