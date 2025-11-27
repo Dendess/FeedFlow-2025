@@ -32,83 +32,98 @@
                 </div>
             @endif
 
-            <div class="org-grid">
-                
-                <div class="org-card">
-                    <h3 class="org-card-title">Détails</h3>
-                    <p class="org-card-desc">Informations générales.</p>
-                    
-                    <div class="org-details-content">
-                        <p><strong>Propriétaire :</strong> {{ optional($organization->owner)->first_name ?? 'Inconnu' }} {{ optional($organization->owner)->last_name }}</p>
-                        <p><strong>Créée le :</strong> {{ $organization->created_at->format('d/m/Y') }}</p>
-                        @if($organization->description)
-                            <p style="margin-top:0.5rem; color: #4b5563;">{{ $organization->description }}</p>
-                        @endif
-                    </div>
-                </div>
+            <div class="org-grid org-grid--show">
 
-                <div class="org-card org-col-span-2">
-                    <h3 class="org-card-title">Membres de l'équipe</h3>
-                    <p class="org-card-desc">Gérez les accès à cette organisation.</p>
+                <section class="org-card org-panel">
+                    <div class="org-panel-heading">
+                        <div class="org-panel-icon">ℹ️</div>
+                        <div>
+                            <h3 class="org-card-title">Détails</h3>
+                            <p class="org-card-desc">Informations générales de l'organisation.</p>
+                        </div>
+                    </div>
+                    <dl class="org-details-content">
+                        <div class="org-detail-row">
+                            <dt>Propriétaire</dt>
+                            <dd>{{ optional($organization->owner)->first_name ?? 'Inconnu' }} {{ optional($organization->owner)->last_name }}</dd>
+                        </div>
+                        <div class="org-detail-row">
+                            <dt>Créée le</dt>
+                            <dd>{{ $organization->created_at->format('d/m/Y') }}</dd>
+                        </div>
+                        @if($organization->description)
+                            <div class="org-detail-row org-detail-row--full">
+                                <dt>Description</dt>
+                                <dd>{{ $organization->description }}</dd>
+                            </div>
+                        @endif
+                    </dl>
+                </section>
+
+                <section class="org-card org-panel org-panel--team">
+                    <div class="org-panel-heading">
+                        <div class="org-panel-icon">👥</div>
+                        <div>
+                            <h3 class="org-card-title">Membres de l'équipe</h3>
+                            <p class="org-card-desc">Visualisez et gérez l'accès à l'organisation.</p>
+                        </div>
+                    </div>
 
                     @can('update', $organization)
-                        <div class="org-add-member-wrapper">
+                        <div class="org-add-member-wrapper org-add-member-wrapper--wide">
                             <form action="{{ route('organizations.users.store', $organization) }}" method="POST">
                                 @csrf
-                                <div class="org-form-row">
-                                    <div class="org-form-group-grow">
-                                        <label for="email" class="org-label">Ajouter un utilisateur</label>
+                                <div class="org-form-grid">
+                                    <div>
+                                        <label for="email" class="org-label">Adresse email</label>
                                         <input type="email" name="email" id="email" placeholder="email@exemple.com" class="org-input" required>
                                     </div>
-                                    <div class="org-form-group-fixed">
+                                    <div>
                                         <label for="role" class="org-label">Rôle</label>
                                         <select name="role" id="role" class="org-input">
                                             <option value="member">Membre</option>
                                             <option value="admin">Admin</option>
                                         </select>
                                     </div>
-                                    <button type="submit" class="org-btn-primary">Ajouter</button>
+                                    <div class="org-form-actions-inline">
+                                        <button type="submit" class="org-btn-primary">Ajouter</button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
                     @endcan
 
-                    <div class="org-users-list">
+                    <div class="org-members-table">
+                        <div class="org-members-table__head">
+                            <span>Membre</span>
+                            <span>Rôle</span>
+                            <span class="org-members-table__head-actions">Actions</span>
+                        </div>
+
                         @foreach($organization->users as $user)
-                            <div class="org-card-footer">
-                                <div class="org-card-left">
+                            <div class="org-member-row">
+                                <div class="org-member-ident">
                                     <div class="org-avatar-circle">
-                                        {{ substr($user->first_name, 0, 1) }}
+                                        {{ strtoupper(substr($user->first_name, 0, 1)) }}
                                     </div>
-                                    
                                     <div>
-                                        <div class="org-user-info">
-                                            {{ $user->first_name }} {{ $user->last_name }}
-                                        </div>
+                                        <div class="org-user-info">{{ $user->first_name }} {{ $user->last_name }}</div>
                                         <div class="org-user-email">{{ $user->email }}</div>
                                     </div>
                                 </div>
 
-                                <div class="org-header-actions">
-                                    
-                                    {{-- LOGIQUE DES BADGES --}}
+                                <div class="org-member-role">
                                     @if($organization->user_id === $user->id)
-                                        <span class="org-badge org-badge-owner">
-                                            👑 Propriétaire
-                                        </span>
+                                        <span class="org-badge org-badge-owner">👑 Propriétaire</span>
                                     @elseif($user->pivot->role === 'admin')
-                                        <span class="org-badge org-badge-admin">
-                                            🛡️ Admin
-                                        </span>
+                                        <span class="org-badge org-badge-admin">🛡️ Admin</span>
                                     @else
-                                        <span class="org-badge org-badge-member">
-                                            Membre
-                                        </span>
+                                        <span class="org-badge org-badge-member">Membre</span>
                                     @endif
+                                </div>
 
-                                    {{-- LOGIQUE DU BOUTON SUPPRIMER --}}
+                                <div class="org-member-actions">
                                     @can('update', $organization)
-                                        {{-- On ne peut pas supprimer le propriétaire ni soi-même --}}
                                         @if($organization->user_id !== $user->id && $user->id !== auth()->id())
                                             <form action="{{ route('organizations.users.destroy', [$organization, $user]) }}" method="POST" class="org-inline-form" onsubmit="return confirm('Voulez-vous vraiment retirer cet utilisateur ?');">
                                                 @csrf
@@ -117,13 +132,11 @@
                                             </form>
                                         @endif
                                     @endcan
-
                                 </div>
                             </div>
                         @endforeach
                     </div>
-
-                </div>
+                </section>
             </div>
         </div>
     </div>

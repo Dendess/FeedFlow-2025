@@ -1,21 +1,15 @@
 <?php
+
 namespace App\Actions\Organization;
 
-use App\DTOs\OrganizationDTO;
-use Illuminate\Support\Facades\DB;
+use App\Models\Organization;
 
-final class DeleteOrganizationAction
+class DeleteOrganizationAction
 {
-    public function __construct() {}
-
-    /**
-     * Delete an organization
-     * @param OrganizationDTO $dto
-     * @return array
-     */
-    public function handle(OrganizationDTO $dto): array
+    public function handle(Organization $organization): void
     {
-        return DB::transaction(function () use ($dto) {
-        });
+        // La suppression en cascade des membres et sondages est gérée 
+        // par la base de données (ON DELETE CASCADE) ou par les Events Laravel.
+        $organization->delete();
     }
 }

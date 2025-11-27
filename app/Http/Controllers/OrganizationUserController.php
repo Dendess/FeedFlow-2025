@@ -8,7 +8,6 @@ use App\DTOs\OrganizationUserDTO;
 use App\Http\Requests\Organization\User\StoreOrganizationUserRequest;
 use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class OrganizationUserController extends Controller
 {
@@ -16,14 +15,17 @@ class OrganizationUserController extends Controller
      * Ajoute un User à l'Organisation.
      */
     public function store(
-        StoreOrganizationUserRequest $request, 
+        StoreOrganizationUserRequest $request,
         Organization $organization,
         StoreOrganizationUserAction $action
     ) {
-        $this->authorize('update', $organization); // Seul l'admin ajoute des gens
+        // Seul l'admin / owner peut ajouter des membres
+        $this->authorize('update', $organization);
 
         $dto = OrganizationUserDTO::fromRequest($request);
-        $action->execute($organization, $dto);
+
+        // Appel correct : handle()
+        $action->handle($organization, $dto);
 
         return back()->with('success', 'Utilisateur ajouté à l\'organisation.');
     }
@@ -32,18 +34,20 @@ class OrganizationUserController extends Controller
      * Retire un User de l'Organisation.
      */
     public function destroy(
-        Organization $organization, 
-        User $user, // Le User qu'on veut virer (Route Model Binding)
+        Organization $organization,
+        User $user,
         DeleteOrganizationUserAction $action
     ) {
-        $this->authorize('update', $organization); // Seul l'admin supprime des gens
+        // Seul l'admin / owner peut retirer des membres
+        $this->authorize('update', $organization);
 
-        // Protection : On empêche de supprimer le propriétaire
+        // On empêche de retirer le propriétaire
         if ($organization->user_id === $user->id) {
             return back()->with('error', 'Impossible de retirer le propriétaire.');
         }
 
-        $action->execute($organization, $user);
+        // Appel correct : handle()
+        $action->handle($organization, $user);
 
         return back()->with('success', 'Utilisateur retiré de l\'organisation.');
     }

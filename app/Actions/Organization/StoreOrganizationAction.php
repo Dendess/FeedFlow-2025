@@ -1,35 +1,29 @@
 <?php
+
 namespace App\Actions\Organization;
 
 use App\DTOs\OrganizationDTO;
 use App\Models\Organization;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class StoreOrganizationAction
 {
     /**
-     * Crée une nouvelle organisation et assigne le créateur comme administrateur.
-     *
-     * @param OrganizationDTO $dto  Les données de l'organisation (Nom, Desc...)
-     * @param User $admin           L'utilisateur connecté qui crée l'orga
-     * @return Organization         L'organisation fraîchement créée
+     * Crée une organisation et définit le créateur comme propriétaire et admin.
      */
-    public function execute(OrganizationDTO $dto, User $admin): Organization
+    public function handle(OrganizationDTO $dto): Organization
     {
-        // On encapsule tout dans une Transaction SQL
-        return DB::transaction(function () use ($dto, $admin) {
-            
+        return DB::transaction(function () use ($dto) {
+            // 1. Création de l'organisation
             $organization = Organization::create([
-                'name' => $dto->name,
-                'user_id' => $admin->id, 
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name'        => $dto->name,
+                'description' => $dto->description,
+                'user_id'     => $dto->user_id, // IMPORTANT : On sauvegarde le propriétaire
             ]);
 
-            // On ajoute l'utilisateur dans la table pivot 'organization_user'
-            // pour qu'il puisse accéder à l'organisation via $user->organizations
-            $organization->users()->attach($admin->id, ['role' => 'admin']);
+            // 2. On ajoute aussi le créateur dans la liste des membres avec le rôle 'admin'
+            // Cela permet de le voir dans la liste des membres
+            $organization->users()->attach($dto->user_id, ['role' => 'admin']);
 
             return $organization;
         });

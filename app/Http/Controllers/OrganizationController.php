@@ -2,116 +2,85 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Organization\DeleteOrganizationAction;
+use App\Models\Organization;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 use App\Actions\Organization\StoreOrganizationAction;
 use App\Actions\Organization\UpdateOrganizationAction;
+use App\Actions\Organization\DeleteOrganizationAction;
 use App\DTOs\OrganizationDTO;
 use App\Http\Requests\Organization\StoreOrganizationRequest;
 use App\Http\Requests\Organization\UpdateOrganizationRequest;
-use App\Models\Organization;
-use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
 {
-    /**
-     * Affiche la liste des organisations de l'utilisateur.
-     */
-    public function index(Request $request)
+    public function index(): View
     {
-        // On récupère toutes les organisations liées à l'utilisateur (via la table pivot)
-        $organizations = $request->user()->organizations;
+        $this->authorize('viewAny', Organization::class);
+
+        $user = Auth::user();
+        
+        // Récupération : Propriétaire OU Membre
+        $organizations = Organization::where('user_id', $user->id)
+                        ->orWhereHas('users', function ($query) use ($user) {
+                            $query->where('users.id', $user->id);
+                        })
+                        ->orderBy('created_at', 'desc')
+                        ->get();
 
         return view('organizations.index', compact('organizations'));
     }
 
-    /**
-     * Affiche le formulaire de création.
-     */
-    public function create()
+    public function create(): View
     {
+        $this->authorize('create', Organization::class);
         return view('organizations.create');
     }
 
-    /**
-     * Enregistre une nouvelle organisation.
-     * * @param StoreOrganizationRequest $request (Valide les données)
-     * @param StoreOrganizationAction $action   (Contient la logique métier)
-     */
-    public function store(StoreOrganizationRequest $request, StoreOrganizationAction $action)
+    public function store(StoreOrganizationRequest $request, StoreOrganizationAction $action): RedirectResponse
     {
-        // 1. Transformation : On convertit la Request validée en DTO neutre
+        $this->authorize('create', Organization::class);
+
         $dto = OrganizationDTO::fromRequest($request);
+        $action->handle($dto);
 
-        // 2. Exécution : On appelle l'Action en lui passant le DTO et le User connecté
-        $action->execute($dto, $request->user());
-
-        // 3. Réponse : Redirection vers le dashboard avec message
-        return redirect()->route('dashboard')->with('success', 'Organisation créée avec succès !');
+        return redirect()->route('organizations.index')->with('success', 'Organisation créée !');
     }
 
-    /**
-     * Affiche le formulaire d'édition.
-     */
-    public function edit(Organization $organization)
+    public function show(Organization $organization): View
     {
-        // SÉCURITÉ : Vérifie la Policy (update)
-        $this->authorize('update', $organization);
-
-        return view('organizations.edit', compact('organization'));
-    }
-
-    /**
-     * Affiche les détails d'une organisation.
-     */
-    public function show(Organization $organization)
-    {
-        // Optionnel : vérifier la Policy view si nécessaire
         $this->authorize('view', $organization);
-
+        
+        // Optimisation : charge les utilisateurs pour éviter les requêtes N+1 dans la vue
+        $organization->load('users');
+        
         return view('organizations.show', compact('organization'));
     }
 
-    /**
-     * Met à jour l'organisation.
-     */
-    public function update(UpdateOrganizationRequest $request, Organization $organization, UpdateOrganizationAction $action)
+    public function edit(Organization $organization): View
     {
-        // SÉCURITÉ
+        $this->authorize('update', $organization);
+        return view('organizations.edit', compact('organization'));
+    }
+
+    public function update(UpdateOrganizationRequest $request, Organization $organization, UpdateOrganizationAction $action): RedirectResponse
+    {
         $this->authorize('update', $organization);
 
-        // LOGIQUE
         $dto = OrganizationDTO::fromRequest($request);
-        $action->execute($organization, $dto);
+        $action->handle($organization, $dto);
 
-        return back()->with('success', 'Organisation mise à jour.');
+        return redirect()->route('organizations.index')->with('success', 'Organisation mise à jour.');
     }
 
-    /**
-     * Supprime l'organisation.
-     */
-    public function destroy(Organization $organization, DeleteOrganizationAction $action)
+    public function destroy(Organization $organization, DeleteOrganizationAction $action): RedirectResponse
     {
-        // SÉCURITÉ : Seul l'admin peut supprimer (voir Policy)
         $this->authorize('delete', $organization);
 
-        $action->execute($organization);
+        $action->handle($organization);
 
-        return redirect()->route('dashboard')->with('success', 'Organisation supprimée.');
-    }
-
-    /**
-     * Méthode personnalisée pour changer d'organisation active.
-     */
-    public function switch(Request $request, Organization $organization)
-    {
-        // On vérifie manuellement que l'utilisateur est bien membre de cette orga
-        if (! $request->user()->organizations->contains($organization)) {
-            abort(403);
-        }
-
-        // On stocke l'ID dans la session PHP
-        session(['current_organization_id' => $organization->id]);
-
-        return back();
+        return redirect()->route('organizations.index')->with('success', 'Organisation supprimée.');
     }
 }
