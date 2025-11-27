@@ -33,4 +33,15 @@ class Survey extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Survey has many answers
+    public function responses()
+    {
+        return $this->hasMany(\App\Models\SurveyAnswer::class, 'survey_id');
+    }
 }
