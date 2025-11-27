@@ -28,9 +28,9 @@ class SendSurveyDailyReports extends Command
         foreach ($surveys as $survey) {
             if ($survey->responses_count >= 0) {
                 // Send email to survey owner
-                Mail::to($survey->owner->email)->send(
-                    new \App\Mail\DailySurveyReportMail($survey, $survey->responses_count)
-                );
+//                Mail::to($survey->owner->email)->send(
+//                    new \App\Mail\DailySurveyReportMail($survey, $survey->responses_count)
+//                );
                 Log::info("mail.");
 
                 $this->info(
