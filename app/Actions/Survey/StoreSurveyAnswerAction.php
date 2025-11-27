@@ -25,8 +25,6 @@ final class StoreSurveyAnswerAction
             'survey_question_id' => $dto->survey_question_id,
             'user_id' => $dto->user_id,
         ]);
-// Ici on pourrait déclencher un Event (ex : ArticlePublished)
-        event(new SurveyAnswerSubmitted($article));
         return $article;
     }
 }

@@ -20,7 +20,6 @@ final class StoreSurveyQuestionAction
         // 1. Créer la question
         // 2. Éventuellement gérer data (options, etc.)
 
-
         // 3. Retourner quelque chose
         return SurveyQuestion::create([
             'survey_id' => 1,
