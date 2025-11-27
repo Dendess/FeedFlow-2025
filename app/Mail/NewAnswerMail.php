@@ -2,8 +2,8 @@
 
 namespace App\Mail;
 
+use App\Models\SurveyAnswer;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -13,41 +13,25 @@ class NewAnswerMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct()
-    {
-        //
-    }
+    public SurveyAnswer $answer;
 
-    /**
-     * Get the message envelope.
-     */
-    public function envelope(): Envelope
-    {
+
+    public function __construct(SurveyAnswer $answer){$this->answer = $answer;}
+
+
+
+    public function envelope(): Envelope{
         return new Envelope(
-            subject: 'New Answer Mail',
-        );
-    }
+            subject: 'Nouvelle réponse à votre sondage!',);}
 
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
+
+
+    public function content(): Content{
         return new Content(
-            view: 'view.name',
-        );
-    }
+            view: 'emails.new_answer_mail',);}
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
-    }
+
+
+    public function attachment(): array{
+        return [];}
 }
