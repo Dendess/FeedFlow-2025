@@ -36,7 +36,12 @@ docker exec -it feedflow-app php artisan db:seed
 | Emails (Mailpit)             | http://localhost:8025        | Voir toutes les notifications            |
 | Base de données (PhpMyAdmin) | http://localhost:8080        | feedflow_user / feedflow2025 |
 
-**Compte test** : `test@feedflow.local` / `password`
+**Comptes de test** :
+- `john.doe@feedflow.local` / `password` (Admin TechCorp)
+- `jane.smith@feedflow.local` / `password` (Admin Green Energy)
+- `bob.martin@feedflow.local` / `password` (Admin EduLearn)
+- `alice.johnson@feedflow.local` / `password` (Admin Health Plus)
+- `charlie.brown@feedflow.local` / `password` (Membre)
 
 ## Commandes Docker utiles
 

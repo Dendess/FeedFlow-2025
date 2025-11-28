@@ -46,7 +46,8 @@ class OrganizationPolicy
 
     public function delete(User $user, Organization $organization): bool
     {
-        return $this->update($user, $organization);
+        // Seul le propriétaire peut supprimer l'organisation
+        return $user->id == $organization->user_id;
     }
 
     public function restore(User $user, Organization $organization): bool

@@ -121,6 +121,7 @@
                         @csrf
                         <input type="hidden" name="survey_id" id="survey_id_hidden" value="{{ old('survey_id', request('survey')) }}">
                         <input type="hidden" id="organization_id_hidden" value="{{ request('organization') }}">
+                        <input type="hidden" name="question_type_final" id="question_type_final" value="text">
 
                         <div id="selected-context" class="flex items-center gap-2 text-xs bg-indigo-50 border-l-4 border-indigo-500 px-3 py-2 rounded hidden">
                             <span class="font-medium">Contexte:</span>
@@ -148,8 +149,8 @@
                                     <span class="text-sm">Échelle (1-10)</span>
                                 </label>
                                 <label class="flex items-center gap-2 p-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-50">
-                                    <input type="radio" name="question_type" value="option" class="question-type-radio w-4 h-4 text-indigo-600">
-                                    <span class="text-sm">Choix multiples</span>
+                                    <input type="radio" name="question_type" value="option_single" class="question-type-radio w-4 h-4 text-indigo-600" id="option-radio">
+                                    <span class="text-sm">Choix</span>
                                 </label>
                             </div>
                         </fieldset>
@@ -185,8 +186,8 @@
                                 ➕ Ajouter une option
                             </button>
                             <label class="flex items-center gap-2 mt-3 text-xs text-gray-700 cursor-pointer">
-                                <input type="checkbox" name="allow_multiple" id="allow_multiple" class="w-4 h-4 rounded border-gray-300 text-indigo-600">
-                                <span>Autoriser plusieurs réponses</span>
+                                <input type="checkbox" id="allow_multiple_checkbox" class="w-4 h-4 rounded border-gray-300 text-indigo-600">
+                                <span>Autoriser plusieurs réponses (choix multiples)</span>
                             </label>
                         </div>
 
@@ -315,7 +316,7 @@
                 // Afficher et activer required pour le type sélectionné
                 if(type === 'scale') {
                     scaleContainer.classList.remove('hidden');
-                } else if(type === 'option') {
+                } else if(type === 'option_single' || type === 'option_multiple') {
                     optionsContainer.classList.remove('hidden');
                     
                     // Ajouter 2 options par défaut si la liste est vide
@@ -576,15 +577,46 @@
             });
 
             // Question type radio buttons
-            typeRadios.forEach(r => r.addEventListener('change', (e)=> setVisibility(e.target.value)));
+            typeRadios.forEach(r => r.addEventListener('change', (e)=> {
+                setVisibility(e.target.value);
+                // Mettre à jour le champ hidden avec le bon type
+                updateQuestionTypeFinal();
+            }));
 
             // Add option button
             addOptionBtn.addEventListener('click', ()=> addOption());
+
+            // Checkbox pour autoriser plusieurs réponses
+            const allowMultipleCheckbox = document.getElementById('allow_multiple_checkbox');
+            const questionTypeFinalInput = document.getElementById('question_type_final');
+            
+            if (allowMultipleCheckbox) {
+                allowMultipleCheckbox.addEventListener('change', updateQuestionTypeFinal);
+            }
+
+            function updateQuestionTypeFinal() {
+                const selectedType = document.querySelector('input[name="question_type"]:checked')?.value || 'text';
+                
+                if (selectedType === 'option_single') {
+                    // Si c'est un type choix, vérifier la checkbox
+                    if (allowMultipleCheckbox && allowMultipleCheckbox.checked) {
+                        questionTypeFinalInput.value = 'option_multiple';
+                    } else {
+                        questionTypeFinalInput.value = 'option_single';
+                    }
+                } else {
+                    // Pour les autres types, garder tel quel
+                    questionTypeFinalInput.value = selectedType;
+                }
+                
+                console.log('Type de question final:', questionTypeFinalInput.value);
+            }
 
             // Initialize the page
             loadOrganizations();
             setVisibility('text');
             updateSubmitState();
+            updateQuestionTypeFinal();
         });
     </script>
 @endpush

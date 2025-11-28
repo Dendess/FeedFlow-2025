@@ -76,7 +76,7 @@ class SurveyController extends Controller
         $dto = SurveyDTO::fromRequest($request);
         $action->handle($survey, $dto);
 
-        return redirect()->route('surveys.index')->with('success', 'Sondage mis à jour.');
+        return redirect()->route('surveys.show', $survey)->with('success', 'Sondage mis à jour.');
     }
 
     public function destroy(Survey $survey): RedirectResponse

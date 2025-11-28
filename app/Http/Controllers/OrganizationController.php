@@ -72,7 +72,7 @@ class OrganizationController extends Controller
         $dto = OrganizationDTO::fromRequest($request);
         $action->handle($organization, $dto);
 
-        return redirect()->route('organizations.index')->with('success', 'Organisation mise à jour.');
+        return redirect()->route('organizations.show', $organization)->with('success', 'Organisation mise à jour.');
     }
 
     public function destroy(Organization $organization, DeleteOrganizationAction $action): RedirectResponse

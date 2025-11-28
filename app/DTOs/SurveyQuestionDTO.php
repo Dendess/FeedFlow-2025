@@ -15,7 +15,8 @@ final class SurveyQuestionDTO
 
     public static function fromRequest(Request $request): self
     {
-        $questionType = $request->question_type;
+        // Utiliser question_type_final si disponible, sinon question_type
+        $questionType = $request->input('question_type_final', $request->question_type);
         $options = $request->input('options', []);
 
         // Filter out empty options

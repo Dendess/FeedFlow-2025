@@ -24,12 +24,12 @@ class StoreSurveyQuestionRequest extends FormRequest
         $rules = [
             'survey_id' => ['required', 'integer', 'exists:surveys,id'],
             'title' => ['required', 'string' , 'max:255'],
-            'question_type' => ['required', 'string' , 'in:text,scale,option'],
+            'question_type' => ['required', 'string' , 'in:text,scale,option_single,option_multiple'],
             'options' => ['nullable', 'array'],
         ];
 
-        // Only validate options content if question type is 'option'
-        if ($this->input('question_type') === 'option') {
+        // Only validate options content if question type is 'option_single' or 'option_multiple'
+        if (in_array($this->input('question_type'), ['option_single', 'option_multiple'])) {
             $rules['options.*'] = ['required', 'string', 'distinct', 'max:255'];
         }
 

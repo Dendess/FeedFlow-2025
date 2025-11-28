@@ -116,10 +116,14 @@
                                         <span class="inline-block mt-1 text-xs px-2 py-0.5 rounded
                                             @if($question->question_type === 'text') bg-blue-100 text-blue-700
                                             @elseif($question->question_type === 'scale') bg-purple-100 text-purple-700
-                                            @else bg-green-100 text-green-700
+                                            @elseif($question->question_type === 'option_single') bg-green-100 text-green-700
+                                            @elseif($question->question_type === 'option_multiple') bg-orange-100 text-orange-700
+                                            @else bg-gray-100 text-gray-700
                                             @endif">
                                             @if($question->question_type === 'text') Texte
                                             @elseif($question->question_type === 'scale') Échelle
+                                            @elseif($question->question_type === 'option_single') Choix unique
+                                            @elseif($question->question_type === 'option_multiple') Choix multiples
                                             @else Choix
                                             @endif
                                         </span>
@@ -156,6 +160,35 @@
                                                    oninput="document.getElementById('scale-value-{{ $index }}').textContent = this.value"
                                                    required>
                                         </div>
+                                    
+                                    @elseif ($question->question_type === 'option_single')
+                                        @php
+                                            $options = is_array($question->options) ? $question->options : (is_string($question->options) ? json_decode($question->options, true) : []);
+                                        @endphp
+                                        @foreach ($options as $optIndex => $option)
+                                            <label class="flex items-center gap-2 p-2.5 border border-gray-300 rounded cursor-pointer hover:bg-gray-50 option-label">
+                                                <input type="radio" 
+                                                       name="answers[{{ $index }}][answer]" 
+                                                       value="{{ $option }}" 
+                                                       class="option-input w-4 h-4 text-indigo-600"
+                                                       required>
+                                                <span class="text-sm text-gray-800">{{ $option }}</span>
+                                            </label>
+                                        @endforeach
+                                    
+                                    @elseif ($question->question_type === 'option_multiple')
+                                        @php
+                                            $options = is_array($question->options) ? $question->options : (is_string($question->options) ? json_decode($question->options, true) : []);
+                                        @endphp
+                                        @foreach ($options as $optIndex => $option)
+                                            <label class="flex items-center gap-2 p-2.5 border border-gray-300 rounded cursor-pointer hover:bg-gray-50 option-label">
+                                                <input type="checkbox" 
+                                                       name="answers[{{ $index }}][answer][]" 
+                                                       value="{{ $option }}" 
+                                                       class="option-input w-4 h-4 text-indigo-600 rounded">
+                                                <span class="text-sm text-gray-800">{{ $option }}</span>
+                                            </label>
+                                        @endforeach
                                     
                                     @elseif ($question->question_type === 'single' || $question->question_type === 'options_single')
                                         @php
