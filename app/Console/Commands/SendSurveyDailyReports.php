@@ -10,37 +10,33 @@ use Carbon\Carbon;
 
 class SendSurveyDailyReports extends Command
 {
-    protected $signature = 'surveys:send-daily-reports';
+    protected $signature = 'surveys:send-daily-reports {survey_id?}';
 
     protected $description = 'Send daily survey report to survey owners if more than 10 answers were received yesterday';
 
     public function handle(): int
     {
-        $this->info("Checking survey activity for yesterday…");
-        Log::info("Ma tâche planifiée s’est exécutée.");
+        $surveyId = $this->argument('survey_id');
 
-        $yesterday = Carbon::yesterday();
-
-        $surveys = Survey::withCount(['responses' => function ($query) use ($yesterday) {
-            $query->whereDate('created_at', $yesterday);
-        }])->get();
-
-        foreach ($surveys as $survey) {
-            if ($survey->responses_count >= 0) {
-                // Send email to survey owner
-//                Mail::to($survey->owner->email)->send(
-//                    new \App\Mail\DailySurveyReportMail($survey, $survey->responses_count)
-//                );
-                Log::info("mail.");
-
-                $this->info(
-                    "Report sent to {$survey->owner->email} ({$survey->responses_count} responses)"
-                );
+        if ($surveyId) {
+            $survey = Survey::find($surveyId);
+            if (!$survey) {
+                Log::warning("Survey not found: $surveyId");
+                return Command::FAILURE;
             }
+
+            // Call your logic only for this survey
+
+            Mail::to($survey->owner->email)->send(
+                new \App\Mail\DailySurveyReportMail($survey, $survey->responses()->count())
+            );
+
+            return Command::SUCCESS;
         }
 
-        $this->info("Daily survey report job completed.");
-
+        // fallback = original daily behavior
+        Log::info("Running full daily report job…");
         return Command::SUCCESS;
+
     }
 }
