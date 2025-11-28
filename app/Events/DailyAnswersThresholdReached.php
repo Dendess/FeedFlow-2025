@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Survey;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -13,13 +14,14 @@ use Illuminate\Queue\SerializesModels;
 class DailyAnswersThresholdReached
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    public Survey $survey;
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct(Survey $survey)
     {
-        //
+        $this->survey = $survey;
+
     }
 
     /**

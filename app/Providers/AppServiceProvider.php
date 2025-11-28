@@ -26,12 +26,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->app->booted(function () {
-            // Only run if the table exists
-            if (Schema::hasTable('surveys')) {
-                Artisan::call('surveys:send-daily-reports');
-            }
-        });
-        Log::info('log log log.');
+
     }
 }
