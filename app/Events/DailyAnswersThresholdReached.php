@@ -15,9 +15,7 @@ class DailyAnswersThresholdReached
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public Survey $survey;
-    /**
-     * Create a new event instance.
-     */
+
     public function __construct(Survey $survey)
     {
         $this->survey = $survey;

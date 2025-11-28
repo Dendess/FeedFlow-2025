@@ -7,4 +7,6 @@ use Illuminate\Support\Facades\Schedule;
 
 
 //Schedule::command('surveys:send-daily-reports')->dailyAt('08:00');
-Schedule::command('app:dispatch-daily-events')->everyMinute();
+Schedule::command('surveys:send-daily-reports')->everyMinute();
+Schedule::command('surveys:check-for-survey-to-close')->everyMinute();
+
