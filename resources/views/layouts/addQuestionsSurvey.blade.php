@@ -30,11 +30,59 @@
                     </div>
                     <br>
                     <br>
+                    <nav id="question-type-menu" class="mt-4">
+                        <fieldset>
+                            <legend class="font-semibold mb-2">Type de question</legend>
+
+                            <label class="block mb-1">
+                                <input
+                                    type="radio"
+                                    name="question_type"
+                                    id="question-type-text"
+                                    value="text"
+                                    class="question-type-radio"
+                                    data-question-type="text"
+                                    checked
+                                >
+                                Texte
+                            </label>
+
+                            <label class="block mb-1">
+                                <input
+                                    type="radio"
+                                    name="question_type"
+                                    id="question-type-scale"
+                                    value="scale"
+                                    class="question-type-radio"
+                                    data-question-type="scale"
+                                >
+                                Échelle (1–10)
+                            </label>
+
+                            <label class="block mb-1">
+                                <input
+                                    type="radio"
+                                    name="question_type"
+                                    id="question-type-option"
+                                    value="option"
+                                    class="question-type-radio"
+                                    data-question-type="option"
+                                >
+                                Option de réponse
+                            </label>
+                        </fieldset>
+                    </nav>
+                    <br>
+                    <br>
+                    <div id="scale-container" hidden>
                     <input type="range" id="scale" name="scale" min="1" max="10" value="5" oninput="scaleValue.value = scale.value">
                     <output id="scaleValue">5</output>
+                    </div>
                     <br>
                     <br>
-                    <input type="checkbox" id="question_type" name="question_type">Plusieurs réponses possibles</input>
+                    <div id="checkbox-nb-ansewer-container" hidden>
+                        <input type="checkbox" id="question_type_multi_or_single" name="question_type_multi_or_single">Plusieurs réponses possibles</input>
+                    </div>
                     <br>
                     <br>
                     <button type="submit"
@@ -46,6 +94,8 @@
         </div>
 
         <script>
+
+            // pour le nombre d'option
             const slider = document.getElementById('scale');
             const scaleValue = document.getElementById('scaleValue');
             const container = document.getElementById('options-container');
@@ -60,8 +110,6 @@
                     newInput.type = 'text';
                     newInput.name = 'options[]';
                     newInput.placeholder = 'Option de réponse';
-                    newInput.value = i + 1; // affiche par défaut une valeur entre 1 et 10 dans les inputs
-                    newInput.readOnly = true; // pour que l'utilisateur ne change pas les nombres
                     newInput.classList.add('mb-2');
                     container.appendChild(newInput);
                 }
@@ -69,6 +117,43 @@
 
             generateOptions();
 
+            slider.addEventListener('input', () => {
+                scaleValue.value = slider.value;
+                generateOptions();
+            });
+
+            // pour gérer les élément visible et utilisable
+
+            const scaleContainer = document.getElementById('scale-container');
+            const checkboxNbAnsewer = document.getElementById('checkbox-nb-ansewer-container')
+            const typeRadios = document.querySelectorAll('.question-type-radio');
+
+            // affichage en fonction du type de question sélectionné
+            function updateQuestionTypeUI() {
+                const selected = document.querySelector('.question-type-radio:checked');
+                if (!selected) return;
+
+                const type = selected.dataset.questionType; // "text" | "scale" | "options"
+
+                if (type === 'option') {
+                    container.hidden = false;
+                    scaleContainer.hidden = false;
+                    checkboxNbAnsewer.hidden = false;
+                } else {
+                    container.hidden = true;
+                    scaleContainer.hidden = true;
+                    checkboxNbAnsewer.hidden = true;
+
+                }
+            }
+
+            // listener sur les radios
+            typeRadios.forEach((radio) => {
+                radio.addEventListener('change', updateQuestionTypeUI);
+            });
+
+            // initialisation
+            updateQuestionTypeUI();
             slider.addEventListener('input', () => {
                 scaleValue.value = slider.value;
                 generateOptions();

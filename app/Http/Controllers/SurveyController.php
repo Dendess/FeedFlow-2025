@@ -57,7 +57,7 @@ class SurveyController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('surveys', compact('surveys'));
+        return view('surveys2', compact('surveys'));
     }
     public function __constructFromG()
     {
