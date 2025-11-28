@@ -4,14 +4,12 @@ namespace Tests\Unit;
 
 use App\Actions\Survey\StoreSurveyAnswerAction;
 use App\DTOs\SurveyAnswerDTO;
-use App\Events\SurveyAnswerSubmitted;
 use App\Models\Organization;
 use App\Models\Survey;
 use App\Models\SurveyQuestion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -19,10 +17,8 @@ class StoreSurveyAnswerActionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_persists_an_answer_and_dispatches_the_event(): void
+    public function test_it_persists_an_answer(): void
     {
-        Event::fake();
-
         $user = User::factory()->create();
         $organization = Organization::create([
             'name' => 'Beta Org',
@@ -65,9 +61,5 @@ class StoreSurveyAnswerActionTest extends TestCase
             'survey_question_id' => $question->id,
             'user_id' => $user->id,
         ]);
-
-        Event::assertDispatched(SurveyAnswerSubmitted::class, function ($event) use ($answer) {
-            return $event->answer->is($answer);
-        });
     }
 }

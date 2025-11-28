@@ -37,7 +37,7 @@
                                     <form action="{{ route('organizations.destroy', $org) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer cette organisation ?');" class="org-inline-form">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="org-btn-delete">🗑️ Supprimer</button>
+                                        <button type="submit" class="org-btn-delete">Supprimer</button>
                                     </form>
                                 </div>
                             @endcan

@@ -3,9 +3,12 @@
         <div class="org-header">
             <h2 class="org-header-title">{{ $organization->name }}</h2>
             <div class="org-header-actions">
+                <a href="{{ route('surveys.index') }}" class="org-btn-primary" style="background: #4f46e5; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; text-decoration: none; font-weight: 600; transition: all 0.2s;">
+                    Mes formulaires
+                </a>
                 @can('update', $organization)
                     <a href="{{ route('organizations.edit', $organization) }}" class="org-btn-edit">
-                        ✏️ Modifier infos
+                        Modifier infos
                     </a>
                 @endcan
                 <a href="{{ route('organizations.index') }}" class="org-action-link">Retour</a>
@@ -56,7 +59,6 @@
 
                 <section class="org-card org-panel org-panel--team">
                     <div class="org-panel-heading">
-                        <div class="org-panel-icon">👥</div>
                         <div>
                             <h3 class="org-card-title">Membres de l'équipe</h3>
                             <p class="org-card-desc">Visualisez et gérez l'accès à l'organisation.</p>
@@ -130,6 +132,49 @@
                             </div>
                         @endforeach
                     </div>
+                </section>
+
+                <section class="org-card org-panel">
+                    <div class="org-panel-heading">
+                        <div class="org-panel-icon">🗂️</div>
+                        <div>
+                            <h3 class="org-card-title">Formulaires de l'organisation</h3>
+                            <p class="org-card-desc">Liste des sondages déjà créés.</p>
+                        </div>
+                        @can('create', App\Models\Survey::class)
+                            <a href="{{ route('surveys.create', ['organization' => $organization->id]) }}" class="org-btn-primary">Créer un sondage</a>
+                        @endcan
+                    </div>
+
+                    @if($organization->surveys->isEmpty())
+                        <p class="org-empty-state">Aucun sondage pour le moment.</p>
+                    @else
+                        <div class="org-list">
+                            @foreach($organization->surveys as $survey)
+                                <div class="org-list-item flex items-center justify-between gap-4">
+                                    <a href="{{ route('surveys.show', $survey) }}" class="flex-1">
+                                        <div class="org-list-title">{{ $survey->title }}</div>
+                                        <div class="org-list-meta text-sm text-gray-600">
+                                            Crée le {{ $survey->created_at->format('d/m/Y') }} ·
+                                            @if($survey->is_anonymous)
+                                                Anonyme
+                                            @else
+                                                Identifié
+                                            @endif
+                                        </div>
+                                    </a>
+
+                                    <div class="flex items-center gap-2">
+                                        @can('view', $survey)
+                                            <a href="{{ route('surveys.answers.form', $survey) }}" class="org-btn-primary">Répondre</a>
+                                        @endcan
+
+                                        <a href="{{ route('surveys.show', $survey) }}" class="org-btn-secondary">Voir</a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
                 </section>
             </div>
         </div>

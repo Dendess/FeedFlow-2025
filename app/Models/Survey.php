@@ -12,7 +12,7 @@ class Survey extends Model
     use HasFactory;
 
     protected $fillable = [
-        'organization_id', 'user_id', 'title', 'token', 
+        'organization_id', 'user_id', 'title', 'token',
         'description', 'start_date', 'end_date', 'is_anonymous',
     ];
 
@@ -32,11 +32,18 @@ class Survey extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Réponses (answers) liées à ce sondage.
-     */
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function responses(): HasMany
     {
-        return $this->hasMany(SurveyAnswer::class, 'survey_id');
+        return $this->hasMany(\App\Models\SurveyAnswer::class, 'survey_id');
+    }
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(SurveyQuestion::class, 'survey_id');
     }
 }

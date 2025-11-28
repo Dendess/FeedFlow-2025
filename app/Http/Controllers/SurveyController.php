@@ -3,20 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Survey\StoreSurveyAction;
+use App\Actions\Survey\StoreSurveyAnswerAction;
+use App\Actions\Survey\StoreSurveyQuestionAction;
 use App\Actions\Survey\UpdateSurveyAction;
+use App\DTOs\SurveyAnswerDTO;
 use App\DTOs\SurveyDTO;
+use App\DTOs\SurveyQuestionDTO;
+use App\Events\SurveyAnswerSubmitted;
+use App\Http\Requests\Survey\StoreSurveyAnswerRequest;
+use App\Http\Requests\Survey\StoreSurveyQuestionRequest;
 use App\Http\Requests\Survey\StoreSurveyRequest;
 use App\Http\Requests\Survey\UpdateSurveyRequest;
 use App\Models\Survey;
+use App\Models\SurveyQuestion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class SurveyController extends Controller
 {
-    /**
-     * Liste des sondages (Filtrée par les orgas de l'user).
-     */
     public function index(): View
     {
         $this->authorize('viewAny', Survey::class);
@@ -24,21 +29,17 @@ class SurveyController extends Controller
         $userOrgIds = Auth::user()->organizations()->pluck('organizations.id');
 
         $surveys = Survey::whereIn('organization_id', $userOrgIds)
-            ->with('organization') // Optimisation
+            ->with('organization')
             ->orderBy('created_at', 'desc')
             ->get();
 
         return view('surveys.index', compact('surveys'));
     }
 
-    /**
-     * Formulaire de création.
-     */
     public function create(): View
     {
         $this->authorize('create', Survey::class);
 
-        // Seuls les admins d'une orga peuvent créer un sondage pour elle
         $organizations = Auth::user()->organizations()
             ->wherePivot('role', 'admin')
             ->get();
@@ -46,72 +47,48 @@ class SurveyController extends Controller
         return view('surveys.create', compact('organizations'));
     }
 
-    /**
-     * Stockage (Uses DTO + Action).
-     */
     public function store(StoreSurveyRequest $request, StoreSurveyAction $action): RedirectResponse
     {
-        // 1. Validation & Auth faites dans StoreSurveyRequest
-
-        // 2. Création du DTO
         $dto = SurveyDTO::fromRequest($request);
 
-        // 3. Exécution de l'Action
         $action->handle($dto);
 
         return redirect()->route('surveys.index')->with('success', 'Sondage créé avec succès.');
     }
 
-    /**
-     * Voir un sondage.
-     */
     public function show(Survey $survey): View
     {
         $this->authorize('view', $survey);
+
         return view('surveys.show', compact('survey'));
     }
 
-    /**
-     * Formulaire d'édition.
-     */
     public function edit(Survey $survey): View
     {
         $this->authorize('update', $survey);
+
         return view('surveys.edit', compact('survey'));
     }
 
-    /**
-     * Mise à jour (Uses DTO + Action).
-     */
     public function update(UpdateSurveyRequest $request, Survey $survey, UpdateSurveyAction $action): RedirectResponse
     {
         $this->authorize('update', $survey);
 
-        // 1. DTO
-        // Note: Assure-toi que ton SurveyDTO a une méthode fromRequest ou similaire adaptée à l'update
-        // Sinon, utilise simplement $request->validated() si l'action accepte un tableau.
         $dto = SurveyDTO::fromRequest($request);
-
-        // 2. Action
         $action->handle($survey, $dto);
 
         return redirect()->route('surveys.index')->with('success', 'Sondage mis à jour.');
     }
 
-    /**
-     * Suppression.
-     */
     public function destroy(Survey $survey): RedirectResponse
     {
         $this->authorize('delete', $survey);
         $survey->delete();
+
         return redirect()->route('surveys.index')->with('success', 'Sondage supprimé.');
     }
 
-    /**
-     * Page publique (répondre au sondage via token).
-     */
-    public function publicShow($token)
+    public function publicShow(string $token)
     {
         $survey = Survey::where('token', $token)->firstOrFail();
 
@@ -126,12 +103,93 @@ class SurveyController extends Controller
         return view('surveys.public-show', compact('survey'));
     }
 
-    /**
-     * Voir les résultats (Story 9).
-     */
     public function results(Survey $survey): View
     {
         $this->authorize('viewResults', $survey);
+
+        // Ensure questions are loaded for the results view
+        $survey->load('questions');
+
         return view('surveys.results', compact('survey'));
+    }
+
+    public function storeAnswer(StoreSurveyAnswerRequest $request, StoreSurveyAnswerAction $action): RedirectResponse
+    {
+        $article = null;
+
+        $validated = $request->validated();
+
+        $first = $validated['answers'][0] ?? null;
+        if (!$first || empty($first['survey_id'])) {
+            abort(400, 'Survey id missing');
+        }
+
+        $survey = Survey::findOrFail($first['survey_id']);
+        $this->authorize('view', $survey);
+
+        foreach ($validated['answers'] as $answerData) {
+            if (is_array($answerData['answer'])) {
+                $answerData['answer'] = json_encode($answerData['answer']);
+            }
+
+            $dto = SurveyAnswerDTO::fromArray($answerData, $request);
+            $article = $action->execute($dto);
+        }
+
+        if ($article) {
+            SurveyAnswerSubmitted::dispatch($article);
+        }
+
+        return redirect()->route('surveys.show', $survey)->with('success', 'Merci pour votre réponse!');
+    }
+
+    public function indexAnswer(Survey $survey): View
+    {
+        $this->authorize('view', $survey);
+
+        $questions = SurveyQuestion::where('survey_id', $survey->id)->get();
+
+        return view('layouts.AnswerQuestion', [
+            'questions' => $questions,
+            'survey_id' => $survey->id,
+            'survey' => $survey,
+        ]);
+    }
+
+    public function displayAnswer(int $organization, int $survey, int $question)
+    {
+        $answers = \App\Models\SurveyAnswer::selectRaw('answer')
+            ->where('survey_question_id', $question)
+            ->get();
+
+        $rawAnswers = $answers->pluck('answer');
+        $answerCounts = [];
+
+        foreach ($rawAnswers as $answer) {
+            $decoded = json_decode($answer, true);
+
+            if (is_array($decoded)) {
+                foreach ($decoded as $item) {
+                    $answerCounts[$item] = ($answerCounts[$item] ?? 0) + 1;
+                }
+            } else {
+                $answerCounts[$answer] = ($answerCounts[$answer] ?? 0) + 1;
+            }
+        }
+
+        $labels = array_keys($answerCounts);
+        $totals = array_values($answerCounts);
+
+        return view('layouts.answers_display', compact('labels', 'totals'));
+    }
+
+    public function storeSurveyQuestion(StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action)
+    {
+        $dto = SurveyQuestionDTO::fromRequest($request);
+        $question = $action->execute($dto);
+
+        return redirect()
+            ->route('surveys.questions.create', ['survey' => $request->survey_id])
+            ->with('success', "Question '{$question->title}' ajoutée avec succès!");
     }
 }

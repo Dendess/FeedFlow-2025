@@ -21,16 +21,19 @@ class StoreSurveyQuestionRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
+            'survey_id' => ['required', 'integer', 'exists:surveys,id'],
             'title' => ['required', 'string' , 'max:255'],
-            'question_type' => ['nullable', 'string' , 'max:255'],
-            'options' => ['required', 'array'],
-            //'options' => ['required', function($attribute, $value, $fail) {
-                //if($value ==1) $fail('erreur');
-
-
-            //}],
+            'question_type' => ['required', 'string' , 'in:text,scale,option'],
+            'options' => ['nullable', 'array'],
         ];
+
+        // Only validate options content if question type is 'option'
+        if ($this->input('question_type') === 'option') {
+            $rules['options.*'] = ['required', 'string', 'distinct', 'max:255'];
+        }
+
+        return $rules;
     }
 
     /*
@@ -40,8 +43,11 @@ class StoreSurveyQuestionRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'survey_id.required' => 'Identifiant du sondage manquant.',
+            'survey_id.exists' => 'Sondage introuvable.',
             'title.required' => 'Veuillez écrire un titre avant de valider la question.',
-            'question_type.required' => 'Le contenu est obligatoire.',
+            'question_type.required' => 'Le type de question est obligatoire.',
+            'options.*.required_if' => 'Veuillez fournir au moins une option pour les questions à choix.',
         ];
     }
 

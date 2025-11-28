@@ -53,8 +53,8 @@ class OrganizationController extends Controller
     {
         $this->authorize('view', $organization);
         
-        // Optimisation : charge les utilisateurs pour éviter les requêtes N+1 dans la vue
-        $organization->load('users');
+        // On charge aussi les sondages pour lister les formulaires
+        $organization->load(['users', 'surveys' => fn ($query) => $query->latest()]);
         
         return view('organizations.show', compact('organization'));
     }

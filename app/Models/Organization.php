@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;      // <--- IMPORT INDISPENSABLE
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;  // <--- Recommandé pour le typage
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Survey;
 
 class Organization extends Model
 {
@@ -30,5 +32,10 @@ class Organization extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function surveys(): HasMany
+    {
+        return $this->hasMany(Survey::class);
     }
 }

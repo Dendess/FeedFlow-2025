@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    @push('styles')
+        <link href="{{ asset('css/surveys.css') }}" rel="stylesheet">
+    @endpush
+
+    <div class="container survey-page">
         <h1>{{ $survey->title }}</h1>
         <p>{{ $survey->description }}</p>
 

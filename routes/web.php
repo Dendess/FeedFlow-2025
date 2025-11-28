@@ -5,6 +5,7 @@ use App\Http\Controllers\OrganizationUserController; // N'oublie pas cet import 
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +21,7 @@ Route::get('/', function () {
 Route::get('/s/{token}', [SurveyController::class, 'publicShow'])
     ->name('public.survey.show');
 
-// Enregistrer la réponse (Action publique) - À décommenter si tu as le Controller dédié
+// Route publique pour enregistrer une réponse : ajouter le controller dédié si nécessaire
 // Route::post('/s/{token}', [SurveyAnswerController::class, 'store'])->name('public.survey.store');
 
 
@@ -32,6 +33,51 @@ Route::get('/s/{token}', [SurveyController::class, 'publicShow'])
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
+    Route::prefix('surveys')->name('surveys.')->group(function () {
+        // Questions du sondage
+        Route::view('/questions/create', 'layouts.addQuestionsSurvey')->name('questions.create');
+        Route::post('/questions', [SurveyController::class, 'storeSurveyQuestion'])->name('questions.store');
+
+        // CRUD principal
+        Route::get('/', [SurveyController::class, 'index'])->name('index');
+        Route::get('/create', [SurveyController::class, 'create'])->name('create');
+        Route::post('/', [SurveyController::class, 'store'])->name('store');
+
+        // Réponses internes
+        Route::get('/{survey}/answer', [SurveyController::class, 'indexAnswer'])
+            ->name('answers.form')
+            ->whereNumber('survey');
+        Route::post('/answers', [SurveyController::class, 'storeAnswer'])->name('answers.store');
+
+        // Détails / édition / résultats
+        Route::get('/{survey}/results', [SurveyController::class, 'results'])
+            ->name('results')
+            ->whereNumber('survey');
+        Route::get('/{survey}/edit', [SurveyController::class, 'edit'])
+            ->name('edit')
+            ->whereNumber('survey');
+        Route::put('/{survey}', [SurveyController::class, 'update'])
+            ->name('update')
+            ->whereNumber('survey');
+        Route::delete('/{survey}', [SurveyController::class, 'destroy'])
+            ->name('destroy')
+            ->whereNumber('survey');
+        Route::get('/{survey}', [SurveyController::class, 'show'])
+            ->name('show')
+            ->whereNumber('survey');
+    });
+
+    // JSON endpoint: list surveys for an organization (used by the question-creator UI)
+    Route::get('/organizations/{organization}/surveys/json', function (\App\Models\Organization $organization) {
+        return response()->json($organization->surveys()->select('id', 'title')->get());
+    })->name('organizations.surveys.json');
+
+    Route::get('/organizations/{organization}/surveys/{survey}/questions/{question}/answers', [SurveyController::class, 'displayAnswer'])
+        ->name('surveys.answers.stats')
+        ->whereNumber('organization')
+        ->whereNumber('survey')
+        ->whereNumber('question');
+
     // --- Dashboard ---
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -42,28 +88,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // --- Sondages (Survey) ---
-    // On définit manuellement pour être sûr de l'ordre et des noms
-    
-    // 1. Liste et Création
-    Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
-    Route::get('/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
-    Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
-
-    // 2. Actions spécifiques sur un sondage
-    Route::get('/surveys/{survey}', [SurveyController::class, 'show'])->name('surveys.show');
-    Route::get('/surveys/{survey}/edit', [SurveyController::class, 'edit'])->name('surveys.edit');
-    Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update'); // ou PATCH
-    Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
-    
-    // 3. Résultats (Story 9)
-    Route::get('/surveys/{survey}/results', [SurveyController::class, 'results'])->name('surveys.results');
-
     // --- Organisations ---
     Route::resource('organizations', OrganizationController::class);
     
     Route::post('/organizations/{organization}/switch', [OrganizationController::class, 'switch'])
         ->name('organizations.switch');
+
+    // JSON: organisations de l'utilisateur connecté (utilisé par l'UI de création de questions)
+    Route::get('/my/organizations/json', function () {
+        $user = auth()->user();
+        if (! $user) return response()->json([], 401);
+        $orgs = $user->organizations()->select('id', 'name')->get();
+        return response()->json($orgs);
+    })->name('my.organizations.json');
+
+    Route::get('/my/organizations/search', function (Request $request) {
+        $user = auth()->user();
+        if (! $user) {
+            return response()->json([], 401);
+        }
+
+        $query = $request->query('q', '');
+        $organizationsQuery = $user->organizations()
+            ->wherePivot('role', 'admin')
+            ->select('organizations.id', 'organizations.name')
+            ->orderBy('organizations.name');
+        
+        if (!empty($query)) {
+            $organizationsQuery->where('organizations.name', 'like', '%'.$query.'%');
+        }
+        
+        $matches = $organizationsQuery->limit(50)->get();
+
+        return response()->json($matches);
+    })->name('my.organizations.search');
 
     // --- Utilisateurs de l'Organisation ---
     Route::post('/organizations/{organization}/users', [OrganizationUserController::class, 'store'])

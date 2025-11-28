@@ -6,36 +6,36 @@ use Illuminate\Http\Request;
 
 final class SurveyQuestionDTO
 {
-
     private function __construct(
-        public readonly int  $survey_id,
+        public readonly int    $survey_id,
         public readonly string $title,
         public readonly string $question_type,
-        public readonly array $options,
-    )
-    {}
-
-    private static function attributeValueToCheckbox ($question_type): string {
-        // condition pour que la checkbox ne fasse pas planter l'ajout
-        if (empty($question_type) || $question_type === null) {
-            $question_type = 'single';
-        }else{
-            $question_type = 'multiple';
-        }
-        return $question_type;
-    }
-
+        public readonly array  $options,
+    ) {}
 
     public static function fromRequest(Request $request): self
     {
-       $rawQuestionType = $request->question_type;
-       $answerQuestionType = self::attributeValueToCheckbox($rawQuestionType);
+        $questionType = $request->question_type;
+        $options = $request->input('options', []);
+
+        // Filter out empty options
+        if (is_array($options)) {
+            $options = array_filter($options, function($value) {
+                return !empty($value) && trim($value) !== '';
+            });
+            $options = array_values($options); // Reindex array
+        }
+
+        // For text type, ensure empty array
+        if ($questionType === 'text') {
+            $options = [];
+        }
 
         return new self(
-            survey_id: 1,
+            survey_id: (int) $request->input('survey', $request->input('survey_id', 0)),
             title: $request->title,
-            question_type: $answerQuestionType,
-            options: $request->options,
+            question_type: $questionType,
+            options: $options,
         );
     }
 }
