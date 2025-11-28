@@ -18,7 +18,7 @@
                 <h1 class="text-2xl font-bold mb-4">
                     Création question du sondage
                 </h1>
-                <form action="{{ route('question.store') }}" method="POST">
+                <form action="{{ route('question.store', ['organization' => $organization, 'survey_id' => $survey_id]) }}" method="POST">
                     @csrf
                     <h3>Question : </h3>
                     <br>
@@ -90,6 +90,38 @@
                         Validée
                     </button>
                 </form>
+                @if(isset($questions) && $questions->isNotEmpty())
+                    <hr class="my-6">
+
+                    <h2 class="text-xl font-semibold mb-4">
+                        Questions déjà créées
+                    </h2>
+
+                    <ul class="space-y-2">
+                        @foreach($questions as $question)
+                            <li class="border rounded-lg px-4 py-2 bg-gray-50">
+                                <div class="font-medium">
+                                    {{ $question->title }}
+                                </div>
+
+                                <div class="text-sm text-gray-600">
+                                    Type : {{ $question->question_type }}
+                                </div>
+
+                                @if(is_array($question->options) && count($question->options) > 0)
+                                    <div class="text-sm mt-1">
+                                        Options :
+                                        {{ implode(', ', $question->options) }}
+                                    </div>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="mt-6 text-gray-500">
+                        Aucune question créée pour le moment.
+                    </p>
+                @endif
             </div>
         </div>
 
@@ -103,7 +135,7 @@
             // constante pour gérer les éléments visible
             const scaleContainer = document.getElementById('scale-container');
             const checkboxNbAnsewer = document.getElementById('checkbox-nb-ansewer-container')
-            const typeRadios = document.querySelectorAll('.question-type-radio');
+            const typeRadios = document.querySelectorAll('.question-type-radio:checked');
 
             function generateOptions() {
                 // nombre d'input que l'on souhaite afficher

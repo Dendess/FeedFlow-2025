@@ -3,6 +3,7 @@
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ProfileController;
+use App\Models\SurveyQuestion;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,10 +17,16 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 //Routes ajout de question
-Route::get('/add-questions', function () {
-    return view('layouts.addQuestionsSurvey');
+Route::get('{organization}/{survey_id}/add-questions', function ($organization, $survey_id) {
+    $questions = SurveyQuestion::where('survey_id' , $survey_id)
+        ->get();
+    return view('layouts.addQuestionsSurvey', [
+        'questions' => $questions,
+        'organization' => $organization,
+        'survey_id'    => $survey_id,
+        ]);
 });
-Route::post('/add-questions', [SurveyController::class, 'store'])->name('question.store');
+Route::post('{organization}/{survey_id}/add-questions', [SurveyController::class, 'store'])->name('question.store');
 
 //Routes réponse aux questions
 Route::get('/{survey}/answer_question', [SurveyController::class, 'indexAnswer'])->name('surveys.index');
