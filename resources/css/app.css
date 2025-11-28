@@ -1,6 +1,6 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* AJOUTE CETTE LIGNE ICI : */
 @import './organizations.css';
+@import './surveys.css';
