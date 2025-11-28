@@ -1,9 +1,17 @@
-<canvas id="myChart" width="400" height="400"></canvas>
+@extends('layouts.app')
+
+@section('content')
+
+    <h5 class="font-semibold">{{$question_title}}</h5>
+
+    <canvas id="myChart" width="500" height="500" class="m-[200px]"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const labels = @json($labels);
+    const labels = @json(array_map('strval', $labels));
+    console.log(labels)
     const totals = @json($totals);
+    console.log(totals)
 
     new Chart(document.getElementById('myChart'), {
         type: 'pie', // camembert
@@ -17,12 +25,13 @@
             }]
         },
         options: {
-            responsive: true,
+            responsive: false,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'right'
                 }
             }
         }
     });
 </script>
+@endsection

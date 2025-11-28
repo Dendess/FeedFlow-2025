@@ -24,6 +24,8 @@ Route::post('/add-questions', [SurveyController::class, 'store'])->name('questio
 //Routes réponse aux questions
 Route::get('/{survey}/answer_question', [SurveyController::class, 'indexAnswer'])->name('surveys.index');
 
+Route::get('{organization}/{survey}/question_list', [SurveyController::class, 'index_question_list'])->name('surveys.questions');
+
 Route::get('{organization}/{survey}/{question_id}/display_question', [SurveyController::class, 'displayAnswer'])->name('surveys.stats');
 
 Route::post('/answer_question', [SurveyController::class, 'storeAnswer'])->name('answer.store');

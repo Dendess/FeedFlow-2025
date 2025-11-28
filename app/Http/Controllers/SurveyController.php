@@ -170,6 +170,12 @@ class SurveyController extends Controller
             ->with('success', 'Merci pour votre réponse!');
     }
 
+    public function index_question_list(int $organization, int $survey_id)
+    {
+        $questions = SurveyQuestion::where('survey_id', $survey_id)->get();   // FETCH DB
+        return view('layouts.questions_list', compact('questions','survey_id', 'organization'));  // BLADE
+    }
+
     public function indexAnswer(int $survey_id)
     {
         $questions = SurveyQuestion::where('survey_id', $survey_id)->get();   // FETCH DB
@@ -179,7 +185,8 @@ class SurveyController extends Controller
     public function displayAnswer($organization,$survey,$question_id)
     {
         // Commande SQL pour récupérer les réponses concernant la question et leur nombre d'occurrences
-        $answers = \App\Models\SurveyAnswer::selectRaw('answer')
+        $question_title = SurveyQuestion::find($question_id)->title;
+        $answers = SurveyAnswer::selectRaw('answer')
             ->where('survey_question_id', $question_id)
             ->get();
 
@@ -210,6 +217,7 @@ class SurveyController extends Controller
         return view('layouts.answers_display', [
             'labels' => $labels,
             'totals' => $totals,
+            'question_title' => $question_title,
         ]);
     }
 
