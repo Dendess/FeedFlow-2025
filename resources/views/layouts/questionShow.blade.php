@@ -23,23 +23,58 @@
                 @if($questions->title)
                     <p>{{$questions->title}}</p>
                 @endif
-                @if ($questions->question_type === 'single')
-                    @foreach ($questions->options as $option)
-                        <label class="block">
-                            <input type="radio" name="answer" value="{{ $option }}">
-                            {{ $option }}
-                        </label>
-                    @endforeach
+                @if ($questions->question_type === 'text')
+                        <input
+                            type="text"
+                            name="answer"
+                            class="border p-2 w-full"
+                            placeholder="Votre réponse..."
+                        >
+                @endif
+                @if ($questions->question_type === 'scale')
+                        <input
+                            type="range"
+                            name="answer"
+                            min="1"
+                            max="10"
+                            value="5"
+                            class="w-full"
+                        >
+                        <div class="text-sm text-gray-600 flex justify-between">
+                            <span>1</span>
+                            <span>10</span>
+                        </div>
                 @endif
 
-                @if ($questions->question_type === 'multiple')
-                    @foreach ($questions->options as $option)
-                        <label class="block">
-                            <input type="checkbox" name="answer[]" value="{{ $option }}">
-                            {{ $option }}
-                        </label>
-                    @endforeach
-                @endif
+
+
+                    {{-- Options : une seule réponse --}}
+                    @if ($questions->question_type === 'options_single')
+                        @foreach ($questions->options as $option)
+                            <label class="block">
+                                <input
+                                    type="radio"
+                                    name="answer"
+                                    value="{{ $option }}"
+                                >
+                                {{ $option }}
+                            </label>
+                        @endforeach
+                    @endif
+
+                    {{-- Options : plusieurs réponses --}}
+                    @if ($questions->question_type === 'options_multiple')
+                        @foreach ($questions->options as $option)
+                            <label class="block">
+                                <input
+                                    type="checkbox"
+                                    name="answer[]"
+                                    value="{{ $option }}"
+                                >
+                                {{ $option }}
+                            </label>
+                        @endforeach
+                    @endif
             </div>
         </div>
     </body>

@@ -37,7 +37,7 @@
                             <label class="block mb-1">
                                 <input
                                     type="radio"
-                                    name="question_type_radio"
+                                    name="question_type"
                                     id="question-type-text"
                                     value="text"
                                     class="question-type-radio"
@@ -50,7 +50,7 @@
                             <label class="block mb-1">
                                 <input
                                     type="radio"
-                                    name="question_type_radio"
+                                    name="question_type"
                                     id="question-type-scale"
                                     value="scale"
                                     class="question-type-radio"
@@ -62,7 +62,7 @@
                             <label class="block mb-1">
                                 <input
                                     type="radio"
-                                    name="question_type_radio"
+                                    name="question_type"
                                     id="question-type-option"
                                     value="option"
                                     class="question-type-radio"
@@ -80,7 +80,9 @@
                     </div>
                     <br>
                     <br>
-                    <input type="checkbox" id="question_type" name="question_type">Plusieurs réponses possibles</input>
+                    <div id="checkbox-nb-ansewer-container" hidden>
+                        <input type="checkbox" id="question_type_multi_or_single" name="question_type_multi_or_single">Plusieurs réponses possibles</input>
+                    </div>
                     <br>
                     <br>
                     <button type="submit"
@@ -123,9 +125,10 @@
             // pour gérer les élément visible et utilisable
 
             const scaleContainer = document.getElementById('scale-container');
+            const checkboxNbAnsewer = document.getElementById('checkbox-nb-ansewer-container')
             const typeRadios = document.querySelectorAll('.question-type-radio');
 
-            // Affichage en fonction du type de question sélectionné
+            // affichage en fonction du type de question sélectionné
             function updateQuestionTypeUI() {
                 const selected = document.querySelector('.question-type-radio:checked');
                 if (!selected) return;
@@ -135,19 +138,21 @@
                 if (type === 'option') {
                     container.hidden = false;
                     scaleContainer.hidden = false;
+                    checkboxNbAnsewer.hidden = false;
                 } else {
-                    // type === 'text'
                     container.hidden = true;
                     scaleContainer.hidden = true;
+                    checkboxNbAnsewer.hidden = true;
+
                 }
             }
 
-            // Listener sur les radios
+            // listener sur les radios
             typeRadios.forEach((radio) => {
                 radio.addEventListener('change', updateQuestionTypeUI);
             });
 
-            // Initialisation
+            // initialisation
             updateQuestionTypeUI();
             slider.addEventListener('input', () => {
                 scaleValue.value = slider.value;
