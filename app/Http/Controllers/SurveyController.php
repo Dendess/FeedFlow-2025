@@ -175,6 +175,45 @@ class SurveyController extends Controller
         $questions = SurveyQuestion::where('survey_id', $survey_id)->get();   // FETCH DB
         return view('layouts.AnswerQuestion', compact('questions','survey_id'));  // BLADE
     }
+
+    public function displayAnswer($organization,$survey,$question_id)
+    {
+        // Commande SQL pour récupérer les réponses concernant la question et leur nombre d'occurrences
+        $answers = \App\Models\SurveyAnswer::selectRaw('answer')
+            ->where('survey_question_id', $question_id)
+            ->get();
+
+        $raw_answers = $answers->pluck('answer');
+        $answer_counts = [];
+
+        foreach ($raw_answers as $answer) {
+            $decoded = json_decode($answer, true);
+
+            if (is_array($decoded)) {
+                foreach ($decoded as $item) {
+                    if (!isset($answer_counts[$item])) {
+                        $answer_counts[$item] = 0;
+                    }
+                    $answer_counts[$item]++;
+                }
+            } else {
+                if (!isset($answer_counts[$answer])) {
+                    $answer_counts[$answer] = 0;
+                }
+                $answer_counts[$answer]++;
+            }
+        }
+
+        $labels = array_keys($answer_counts);
+        $totals = array_values($answer_counts);
+
+        return view('layouts.answers_display', [
+            'labels' => $labels,
+            'totals' => $totals,
+        ]);
+    }
+
+
     public function storeSurveyQuestion(StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action)
     {
         // 1. Construction du DTO à partir de la requête validée
