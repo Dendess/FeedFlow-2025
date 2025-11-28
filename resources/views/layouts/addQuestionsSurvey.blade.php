@@ -95,14 +95,21 @@
 
         <script>
 
-            // pour le nombre d'option
+            // constante pour le nombre d'option
             const slider = document.getElementById('scale');
             const scaleValue = document.getElementById('scaleValue');
             const container = document.getElementById('options-container');
 
+            // constante pour gérer les éléments visible
+            const scaleContainer = document.getElementById('scale-container');
+            const checkboxNbAnsewer = document.getElementById('checkbox-nb-ansewer-container')
+            const typeRadios = document.querySelectorAll('.question-type-radio');
+
             function generateOptions() {
+                // nombre d'input que l'on souhaite afficher
                 const n = parseInt(slider.value);
 
+                // vide le contenu HTML des inputs
                 container.innerHTML = '';
 
                 for (let i = 0; i < n; i++) {
@@ -115,22 +122,8 @@
                 }
             }
 
-            generateOptions();
-
-            slider.addEventListener('input', () => {
-                scaleValue.value = slider.value;
-                generateOptions();
-            });
-
-            // pour gérer les élément visible et utilisable
-
-            const scaleContainer = document.getElementById('scale-container');
-            const checkboxNbAnsewer = document.getElementById('checkbox-nb-ansewer-container')
-            const typeRadios = document.querySelectorAll('.question-type-radio');
-
-            // affichage en fonction du type de question sélectionné
             function updateQuestionTypeUI() {
-                const selected = document.querySelector('.question-type-radio:checked');
+                const selected = document.querySelector('.question-type-radio');
                 if (!selected) return;
 
                 const type = selected.dataset.questionType; // "text" | "scale" | "options"
@@ -147,17 +140,20 @@
                 }
             }
 
+
+            slider.addEventListener('input', () => {
+                scaleValue.value = slider.value;
+                generateOptions();
+            });
+
             // listener sur les radios
             typeRadios.forEach((radio) => {
                 radio.addEventListener('change', updateQuestionTypeUI);
             });
 
-            // initialisation
+            // initialisation des fonctions au chargement de page
+            generateOptions();
             updateQuestionTypeUI();
-            slider.addEventListener('input', () => {
-                scaleValue.value = slider.value;
-                generateOptions();
-            });
         </script>
     </body>
 </html>

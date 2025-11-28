@@ -18,16 +18,17 @@ final class SurveyQuestionDTO
         $baseType = $request->question_type;
 
         if ($baseType === 'option') {
-            // la checkbox existe si "plusieurs réponses possibles" est cochée
+            // permet de voir si le checkbox et caucher ou non
             $isMultiple = $request->has('question_type_multi_or_single');
 
+            // opérateur ternaire pour transformer l'option
             $finalType = $isMultiple
                 ? 'options_multiple'   //  checkboxes
                 : 'options_single';    //  radios
         } else {
             $finalType = $baseType;
         }
-
+        // récupération des valeurs envoyer par les inputs
         $options = $request->input('options', []);
 
         return new self(

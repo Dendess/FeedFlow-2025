@@ -21,11 +21,14 @@ class SendDailyReport
     /**
      * Handle the event.
      */
-    public function handle(DailyAnswersThresholdReached $event): void
+    public function handle(DailyAnswersThresholdReached $event)
     {
-        Log::info('ggg');
+        $survey = $event->survey;
 
-        Artisan::call('surveys:send-daily-reports');
+        Log::info("Running artisan for survey: {$survey->id}");
+
+        Artisan::call('surveys:send-daily-reports', [
+            'survey_id' => $survey->id,
+        ]);
     }
-
 }

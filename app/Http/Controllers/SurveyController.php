@@ -76,7 +76,7 @@ class SurveyController extends Controller
         // 3. Exécution de l'Action de création (inclut la génération du token)
         $action->handle($dto);
 
-        return redirect()->route('surveys.index')->with('success', 'Sondage créé avec succès.');
+        return redirect()->route('surveys')->with('success', 'Sondage créé avec succès.');
     }
 
     public function __constructFromdDev()
