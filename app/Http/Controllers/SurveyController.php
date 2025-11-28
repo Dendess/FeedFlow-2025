@@ -220,7 +220,7 @@ class SurveyController extends Controller
         $dto = SurveyQuestionDTO::fromRequest($request);
         // exécution de la logique métier via l’Action
         $article = $action->execute($dto);
-        return view('layouts.addQuestionsSurvey.blade.php' , ['questions' => $article]);
+        return redirect()->back()->with('success', 'Question ajoutée avec succès !');
     }
     public function destroy(Survey $survey): RedirectResponse
     {

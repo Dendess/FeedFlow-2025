@@ -135,7 +135,7 @@
             // constante pour gérer les éléments visible
             const scaleContainer = document.getElementById('scale-container');
             const checkboxNbAnsewer = document.getElementById('checkbox-nb-ansewer-container')
-            const typeRadios = document.querySelectorAll('.question-type-radio:checked');
+            const typeRadios = document.querySelectorAll('.question-type-radio');
 
             function generateOptions() {
                 // nombre d'input que l'on souhaite afficher
@@ -155,7 +155,7 @@
             }
 
             function updateQuestionTypeUI() {
-                const selected = document.querySelector('.question-type-radio');
+                const selected = document.querySelector('.question-type-radio:checked');
                 if (!selected) return;
 
                 const type = selected.dataset.questionType; // "text" | "scale" | "options"

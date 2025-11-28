@@ -26,7 +26,7 @@ Route::get('{organization}/{survey_id}/add-questions', function ($organization, 
         'survey_id'    => $survey_id,
         ]);
 });
-Route::post('{organization}/{survey_id}/add-questions', [SurveyController::class, 'store'])->name('question.store');
+Route::post('{organization}/{survey_id}/add-questions', [SurveyController::class, 'storeSurveyQuestion'])->name('question.store');
 
 //Routes réponse aux questions
 Route::get('/{survey}/answer_question', [SurveyController::class, 'indexAnswer'])->name('surveys.index');
