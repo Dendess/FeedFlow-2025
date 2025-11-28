@@ -15,10 +15,8 @@ class StoreSurveyRequest extends FormRequest
     {
         return [
             'title'        => ['required', 'string', 'max:255'],
-            // 'description' est requis selon la migration
             'description'  => ['required', 'string'],
             'start_date'   => ['required', 'date', 'after_or_equal:today'],
-            // Règle métier : la date de fin doit être après le début
             'end_date'     => ['required', 'date', 'after:start_date'],
             'is_anonymous' => ['nullable', 'boolean'],
         ];

@@ -19,7 +19,6 @@ class UpdateSurveyAction
             'start_date'   => $dto->start_date,
             'end_date'     => $dto->end_date,
             'is_anonymous' => $dto->is_anonymous,
-            // Note : on ne modifie pas organization_id, user_id ou token ici
         ]);
 
         return $survey;

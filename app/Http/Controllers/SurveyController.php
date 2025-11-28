@@ -30,8 +30,6 @@ class SurveyController extends Controller
         // Assure que seul un utilisateur authentifié peut accéder aux méthodes
         $this->middleware('auth');
     }
-
-    // --- CRÉATION (Store) ---
     public function store(StoreSurveyRequest $request, StoreSurveyAction $action): RedirectResponse
     {
         // 1. La validation a été faite par StoreSurveyRequest
