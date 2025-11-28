@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class StoreOrganizationAction
 {
-    /**
-     * Crée une organisation et définit le créateur comme propriétaire et admin.
-     */
+    // Crée une organisation et définit le créateur comme propriétaire/admin
     public function handle(OrganizationDTO $dto): Organization
     {
         return DB::transaction(function () use ($dto) {

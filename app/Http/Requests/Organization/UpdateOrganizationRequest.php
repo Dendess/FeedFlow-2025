@@ -6,20 +6,14 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateOrganizationRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    // Autorise la requête (les policies font le reste)
     public function authorize(): bool
     {
         // Ici, on suppose que les policies contrôlent l'accès (controller appelle authorize)
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
+    // Règles de validation pour mettre à jour une organisation
     public function rules(): array
     {
         return [

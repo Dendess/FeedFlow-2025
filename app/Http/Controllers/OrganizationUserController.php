@@ -11,9 +11,7 @@ use App\Models\User;
 
 class OrganizationUserController extends Controller
 {
-    /**
-     * Ajoute un User à l'Organisation.
-     */
+    // Ajoute un utilisateur dans l'organisation
     public function store(
         StoreOrganizationUserRequest $request,
         Organization $organization,
@@ -30,9 +28,7 @@ class OrganizationUserController extends Controller
         return back()->with('success', 'Utilisateur ajouté à l\'organisation.');
     }
 
-    /**
-     * Retire un User de l'Organisation.
-     */
+    // Retire un utilisateur de l'organisation
     public function destroy(
         Organization $organization,
         User $user,
