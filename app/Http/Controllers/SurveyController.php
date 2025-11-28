@@ -15,6 +15,7 @@ use App\Http\Requests\Survey\StoreSurveyQuestionRequest;
 use App\Http\Requests\Survey\StoreSurveyRequest;
 use App\Http\Requests\Survey\UpdateSurveyRequest;
 use App\Models\Survey;
+use App\Models\SurveyAnswer;
 use App\Models\SurveyQuestion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -50,9 +51,7 @@ class SurveyController extends Controller
     public function store(StoreSurveyRequest $request, StoreSurveyAction $action): RedirectResponse
     {
         $dto = SurveyDTO::fromRequest($request);
-
         $action->handle($dto);
-
         return redirect()->route('surveys.index')->with('success', 'Sondage créé avec succès.');
     }
 
@@ -156,33 +155,6 @@ class SurveyController extends Controller
         ]);
     }
 
-    public function displayAnswer(int $organization, int $survey, int $question)
-    {
-        $answers = \App\Models\SurveyAnswer::selectRaw('answer')
-            ->where('survey_question_id', $question)
-            ->get();
-
-        $rawAnswers = $answers->pluck('answer');
-        $answerCounts = [];
-
-        foreach ($rawAnswers as $answer) {
-            $decoded = json_decode($answer, true);
-
-            if (is_array($decoded)) {
-                foreach ($decoded as $item) {
-                    $answerCounts[$item] = ($answerCounts[$item] ?? 0) + 1;
-                }
-            } else {
-                $answerCounts[$answer] = ($answerCounts[$answer] ?? 0) + 1;
-            }
-        }
-
-        $labels = array_keys($answerCounts);
-        $totals = array_values($answerCounts);
-
-        return view('layouts.answers_display', compact('labels', 'totals'));
-    }
-
     public function storeSurveyQuestion(StoreSurveyQuestionRequest $request, StoreSurveyQuestionAction $action)
     {
         $dto = SurveyQuestionDTO::fromRequest($request);
@@ -192,4 +164,6 @@ class SurveyController extends Controller
             ->route('surveys.questions.create', ['survey' => $request->survey_id])
             ->with('success', "Question '{$question->title}' ajoutée avec succès!");
     }
+
 }
+

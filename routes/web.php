@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\OrganizationController;
-use App\Http\Controllers\OrganizationUserController; // N'oublie pas cet import !
+use App\Http\Controllers\OrganizationUserController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -20,9 +20,6 @@ Route::get('/', function () {
 // Répondre à un sondage public (via token)
 Route::get('/s/{token}', [SurveyController::class, 'publicShow'])
     ->name('public.survey.show');
-
-// Route publique pour enregistrer une réponse : ajouter le controller dédié si nécessaire
-// Route::post('/s/{token}', [SurveyAnswerController::class, 'store'])->name('public.survey.store');
 
 
 /*
@@ -71,12 +68,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/organizations/{organization}/surveys/json', function (\App\Models\Organization $organization) {
         return response()->json($organization->surveys()->select('id', 'title')->get());
     })->name('organizations.surveys.json');
-
-    Route::get('/organizations/{organization}/surveys/{survey}/questions/{question}/answers', [SurveyController::class, 'displayAnswer'])
-        ->name('surveys.answers.stats')
-        ->whereNumber('organization')
-        ->whereNumber('survey')
-        ->whereNumber('question');
 
     // --- Dashboard ---
     Route::get('/dashboard', function () {

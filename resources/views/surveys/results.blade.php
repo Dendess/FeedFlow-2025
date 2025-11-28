@@ -8,6 +8,8 @@
         </div>
     </x-slot>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <div class="py-6">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white shadow rounded-lg overflow-hidden">
@@ -38,6 +40,8 @@
                                     $counts[$ans->answer] = ($counts[$ans->answer] ?? 0) + 1;
                                 }
                             }
+                            $labels = array_keys($counts);
+                            $totals = array_values($counts);
                         @endphp
 
                         <div class="border border-gray-200 rounded-lg overflow-hidden">
@@ -65,19 +69,37 @@
                                 @if($allAnswers->isEmpty())
                                     <p class="text-sm text-gray-500 italic">Aucune réponse</p>
                                 @else
-                                    @if($question->question_type !== 'text')
-                                        <div class="mb-4 bg-gray-50 rounded p-3">
-                                            <div class="text-xs font-medium text-gray-700 mb-2">Synthèse :</div>
-                                            <div class="space-y-1.5">
-                                                @foreach($counts as $label => $total)
-                                                    <div class="flex items-center gap-2">
-                                                        <div class="flex-1 flex items-center gap-2">
-                                                            <div class="h-6 bg-indigo-100 rounded" style="width: {{ ($total / $allAnswers->count()) * 100 }}%"></div>
-                                                            <span class="text-xs text-gray-700">{{ $label }}</span>
+                                    <!-- Debug info (à supprimer après test) -->
+                                    <div class="text-xs text-gray-500 mb-2">
+                                        Type: {{ $question->question_type }} | Réponses: {{ $allAnswers->count() }} | Labels: {{ count($labels) }}
+                                    </div>
+                                    
+                                    @if($question->question_type !== 'text' && count($labels) > 0)
+                                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                                            <!-- Graphique -->
+                                            <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-4 flex items-center justify-center">
+                                                <div class="w-full max-w-sm">
+                                                    <canvas id="chart-{{ $question->id }}" class="mx-auto"></canvas>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Synthèse textuelle -->
+                                            <div class="bg-gray-50 rounded-lg p-4">
+                                                <div class="text-xs font-medium text-gray-700 mb-3">Synthèse :</div>
+                                                <div class="space-y-2">
+                                                    @foreach($counts as $label => $total)
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="flex-1 flex items-center gap-2">
+                                                                <div class="h-6 bg-indigo-200 rounded transition-all" style="width: {{ ($total / $allAnswers->count()) * 100 }}%"></div>
+                                                                <span class="text-xs text-gray-700 font-medium">{{ $label }}</span>
+                                                            </div>
+                                                            <div class="text-right">
+                                                                <span class="text-xs font-bold text-gray-900">{{ $total }}</span>
+                                                                <span class="text-xs text-gray-500 ml-1">({{ round(($total / $allAnswers->count()) * 100, 1) }}%)</span>
+                                                            </div>
                                                         </div>
-                                                        <span class="text-xs font-medium text-gray-900">{{ $total }}</span>
-                                                    </div>
-                                                @endforeach
+                                                    @endforeach
+                                                </div>
                                             </div>
                                         </div>
                                     @endif
@@ -125,6 +147,75 @@
                                 @endif
                             </div>
                         </div>
+
+                        @if($question->question_type !== 'text' && !$allAnswers->isEmpty() && count($labels) > 0)
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const labels_{{ $question->id }} = @json(array_map('strval', $labels));
+                                    const totals_{{ $question->id }} = @json($totals);
+
+                                    console.log('Question {{ $question->id }}: Trying to create chart');
+                                    console.log('Labels:', labels_{{ $question->id }});
+                                    console.log('Totals:', totals_{{ $question->id }});
+
+                                    const ctx = document.getElementById('chart-{{ $question->id }}');
+                                    console.log('Canvas element:', ctx);
+                                    console.log('Chart available:', typeof Chart !== 'undefined');
+                                    
+                                    if (ctx && typeof Chart !== 'undefined') {
+                                        try {
+                                            new Chart(ctx, {
+                                            type: 'pie',
+                                            data: {
+                                                labels: labels_{{ $question->id }},
+                                                datasets: [{
+                                                    label: 'Nombre de réponses',
+                                                    data: totals_{{ $question->id }},
+                                                    backgroundColor: labels_{{ $question->id }}.map((_, i) => {
+                                                        const hue = (i * 360 / labels_{{ $question->id }}.length);
+                                                        return `hsl(${hue}, 70%, 60%)`;
+                                                    }),
+                                                    borderColor: '#fff',
+                                                    borderWidth: 2
+                                                }]
+                                            },
+                                            options: {
+                                                responsive: true,
+                                                maintainAspectRatio: true,
+                                                plugins: {
+                                                    legend: {
+                                                        position: 'bottom',
+                                                        labels: {
+                                                            padding: 12,
+                                                            font: {
+                                                                size: 11
+                                                            }
+                                                        }
+                                                    },
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function(context) {
+                                                                const label = context.label || '';
+                                                                const value = context.parsed || 0;
+                                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                                const percentage = ((value / total) * 100).toFixed(1);
+                                                                return `${label}: ${value} (${percentage}%)`;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        console.log('Chart created successfully for question {{ $question->id }}');
+                                    } catch (error) {
+                                        console.error('Error creating chart for question {{ $question->id }}:', error);
+                                    }
+                                } else {
+                                    console.error('Cannot create chart: ctx=' + !!ctx + ', Chart=' + (typeof Chart !== 'undefined'));
+                                }
+                                });
+                            </script>
+                        @endif
                     @endforeach
                 </div>
             </div>
